@@ -1,0 +1,615 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="GymTrack Pro - Aplicación de seguimiento de entrenamiento con gamificación">
+    <meta name="author" content="GymTrack">
+    <title>GymTrack Pro | Entrenamiento & Logros</title>
+    
+    <!-- Mobile App Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GymTrack">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23064e3b%22/><path d=%22M30 30h10v40H30zm30 0h10v40H60zM25 45h50v10H25z%22 fill=%22%232dd4bf%22/></svg>">
+
+    <!-- Styles & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pine: '#064e3b',
+                        mint: '#2dd4bf',
+                        dark: '#0a0a0a',
+                        gold: '#fbbf24',
+                        diamond: '#60a5fa'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.05);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: #ffffff;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .tab-active {
+            color: #2dd4bf;
+            border-bottom: 3px solid #2dd4bf;
+        }
+        .badge-locked { filter: grayscale(1) opacity(0.2); }
+        .badge-unlocked { 
+            filter: none; 
+            opacity: 1; 
+            animation: unlockGlow 2s infinite alternate;
+        }
+        @keyframes unlockGlow {
+            from { box-shadow: 0 0 5px rgba(45, 212, 191, 0.2); }
+            to { box-shadow: 0 0 20px rgba(45, 212, 191, 0.4); }
+        }
+        .accent-button {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            box-shadow: 0 10px 20px rgba(6, 78, 59, 0.3);
+        }
+        .nav-item { transition: transform 0.2s; }
+        .nav-item:active { transform: scale(0.95); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <!-- Top Navigation -->
+    <header class="p-6 pt-12 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-xl z-40 border-b border-white/5">
+        <div class="max-w-xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-pine flex items-center justify-center border border-mint/20 shadow-lg">
+                        <svg class="w-6 h-6 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M10 7v10M14 7v10" stroke-width="2.5" stroke-linecap="round"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tighter uppercase leading-none">Gym<span class="text-mint">Track</span></h1>
+                        <p id="user-rank" class="text-[10px] font-bold text-mint/60 uppercase tracking-widest mt-1">Cargando...</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2">
+                        <span class="text-gold">★</span>
+                        <span id="total-xp-header" class="text-sm font-black">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <button onclick="switchTab('workout')" id="tab-workout" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest tab-active uppercase">Entrenar</button>
+                <button onclick="switchTab('challenges')" id="tab-challenges" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Retos</button>
+                <button onclick="switchTab('history')" id="tab-history" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Historial</button>
+                <button onclick="switchTab('metrics')" id="tab-metrics" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Métricas</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- App Container -->
+    <div class="max-w-xl mx-auto p-6">
+        
+        <!-- Tab: Workout -->
+        <section id="content-workout" class="space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-6 rounded-[2.5rem] border-l-4 border-l-mint">
+                    <p class="text-[10px] uppercase font-bold text-white/40 mb-1 tracking-widest">Volumen Total</p>
+                    <p class="text-3xl font-black"><span id="live-volume">0</span> <span class="text-xs text-mint uppercase">kg</span></p>
+                </div>
+                <div class="glass-card p-6 rounded-[2.5rem]">
+                    <p class="text-[10px] uppercase font-bold text-white/40 mb-1 tracking-widest">XP Sesión</p>
+                    <p id="live-xp" class="text-3xl font-black text-gold">0</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 rounded-[2.5rem] flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div id="timer-dot" class="w-2.5 h-2.5 rounded-full bg-white/20"></div>
+                    <span id="timer-display" class="text-3xl font-mono font-bold tracking-tighter">00:00</span>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-timer" onclick="toggleTimer()" class="px-6 py-3 rounded-2xl bg-mint text-pine font-black text-xs uppercase shadow-lg shadow-mint/10">Iniciar</button>
+                    <button onclick="resetTimer()" class="p-3 rounded-2xl bg-white/5 text-white/40 border border-white/5"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                </div>
+            </div>
+
+            <div id="active-exercises" class="space-y-4">
+                <!-- Exercises go here -->
+            </div>
+
+            <button onclick="openModal()" class="w-full py-6 rounded-[2.5rem] accent-button text-mint font-black text-sm uppercase tracking-widest transition-transform active:scale-95">
+                + Añadir Ejercicio
+            </button>
+
+            <button id="btn-finish" onclick="finishWorkout()" class="hidden w-full py-6 rounded-[2.5rem] border-2 border-mint text-mint font-black text-sm uppercase tracking-widest hover:bg-mint/10">
+                Finalizar Entrenamiento
+            </button>
+        </section>
+
+        <!-- Tab: Challenges -->
+        <section id="content-challenges" class="hidden space-y-8">
+            <div class="glass-card p-8 rounded-[3rem] bg-gradient-to-br from-pine/30 to-transparent border-mint/10">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-[10px] font-black text-mint uppercase tracking-[0.2em] mb-1">Tu Nivel Actual</p>
+                        <h2 class="text-4xl font-black italic uppercase">Nivel <span id="level-display">1</span></h2>
+                    </div>
+                    <p class="text-xs font-bold text-white/40"><span id="xp-current">0</span> / <span id="xp-target">500</span> XP</p>
+                </div>
+                <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden">
+                    <div id="xp-bar" class="h-full bg-gradient-to-r from-pine to-mint transition-all duration-700" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4" id="badges-container">
+                <!-- Badges go here -->
+            </div>
+        </section>
+
+        <!-- Tab: History -->
+        <section id="content-history" class="hidden space-y-4">
+            <h2 class="text-2xl font-black uppercase italic px-2">Actividad Reciente</h2>
+            <div id="history-list" class="space-y-4">
+                <!-- History items -->
+            </div>
+        </section>
+
+        <!-- Tab: Metrics -->
+        <section id="content-metrics" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-[2.5rem]">
+                <canvas id="muscleChart" class="w-full"></canvas>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="glass-card p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-bold text-white/30 uppercase mb-1">Sesiones</p>
+                    <p id="stat-workouts" class="text-xl font-black">0</p>
+                </div>
+                <div class="glass-card p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-bold text-white/30 uppercase mb-1">Volumen</p>
+                    <p id="stat-vol" class="text-xl font-black">0k</p>
+                </div>
+                <div class="glass-card p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-bold text-white/30 uppercase mb-1">Récord</p>
+                    <p id="stat-max" class="text-xl font-black">0</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modals -->
+    <div id="modal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-4">
+        <div class="glass-card w-full max-w-md p-8 rounded-[3rem] border-white/10 mb-4 sm:mb-0">
+            <h3 class="text-2xl font-black uppercase italic mb-6">Nuevo <span class="text-mint">Ejercicio</span></h3>
+            <div class="space-y-4">
+                <input type="text" id="input-ex-name" placeholder="Ej: Press de Banca" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-mint">
+                <select id="input-ex-type" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-mint appearance-none">
+                    <option value="Pecho">Pecho</option>
+                    <option value="Espalda">Espalda</option>
+                    <option value="Piernas">Piernas</option>
+                    <option value="Hombros">Hombros</option>
+                    <option value="Brazos">Brazos</option>
+                    <option value="Core">Core</option>
+                    <option value="Cardio">Cardio</option>
+                </select>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closeModal()" class="flex-1 py-4 font-black text-white/30 uppercase text-xs">Cerrar</button>
+                    <button onclick="handleAddExercise()" class="flex-1 py-4 bg-mint rounded-2xl font-black text-pine uppercase text-xs">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Toast -->
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[200] opacity-0 pointer-events-none transition-all duration-500">
+        <div class="bg-dark border border-mint/50 px-8 py-4 rounded-full shadow-[0_0_40px_rgba(45,212,191,0.2)] flex items-center gap-4">
+            <div class="text-3xl" id="toast-icon">🏆</div>
+            <div>
+                <p class="text-[10px] font-black text-mint uppercase tracking-widest">Logro Desbloqueado</p>
+                <p class="text-sm font-bold" id="toast-msg">¡Bien hecho!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTES ---
+        const CHALLENGES = [
+            { id: 'c1', name: 'Primer Paso', desc: '1 sesión completada', goal: 1, type: 'workouts', icon: '🌱', color: 'from-green-400 to-emerald-600' },
+            { id: 'c2', name: 'Constancia', desc: '5 sesiones completadas', goal: 5, type: 'workouts', icon: '🔥', color: 'from-orange-400 to-red-600' },
+            { id: 'c3', name: 'Hábito Real', desc: '10 sesiones completadas', goal: 10, type: 'workouts', icon: '⚓', color: 'from-blue-400 to-indigo-600' },
+            { id: 'c4', name: 'Iniciación Pesada', desc: 'Mueve 1,000kg en total', goal: 1000, type: 'vol', icon: '🐘', color: 'from-emerald-400 to-pine' },
+            { id: 'c5', name: 'Titán de Acero', desc: 'Mueve 10,000kg en total', goal: 10000, type: 'vol', icon: '🔱', color: 'from-slate-400 to-slate-700' },
+            { id: 'c6', name: 'Rey de las Series', desc: 'Completa 50 series', goal: 50, type: 'sets', icon: '♾️', color: 'from-purple-400 to-indigo-600' },
+            { id: 'c7', name: 'Apolo', desc: '5 sesiones de Pecho', goal: 5, type: 'Pecho', icon: '🛡️', color: 'from-red-500 to-rose-700' },
+            { id: 'c8', name: 'Atlas', desc: '5 sesiones de Espalda', goal: 5, type: 'Espalda', icon: '🦍', color: 'from-amber-600 to-yellow-800' },
+            { id: 'c9', name: 'Hércules', desc: '5 sesiones de Piernas', goal: 5, type: 'Piernas', icon: '🍗', color: 'from-lime-400 to-green-600' },
+            { id: 'c10', name: 'Explorador', desc: 'Usa 10 ejercicios distintos', goal: 10, type: 'unique', icon: '🗺️', color: 'from-cyan-400 to-blue-600' },
+            { id: 'c11', name: 'Madrugador', desc: 'Entrena antes de las 9am', goal: 1, type: 'morning', icon: '🌅', color: 'from-yellow-300 to-orange-500' },
+            { id: 'c12', name: 'Guerrero Nocturno', desc: 'Entrena después de las 9pm', goal: 1, type: 'night', icon: '🌙', color: 'from-purple-700 to-black' },
+            { id: 'c13', name: 'Fuerza Bruta', desc: 'Levanta +100kg en una serie', goal: 100, type: 'max_w', icon: '👹', color: 'from-red-700 to-black' },
+            { id: 'c14', name: 'Maratón', desc: 'Entrena por más de 60 min', goal: 60, type: 'time', icon: '⏱️', color: 'from-teal-400 to-emerald-600' },
+            { id: 'c15', name: 'Nivel 5', desc: 'Alcanza el nivel 5', goal: 5, type: 'lvl', icon: '⭐', color: 'from-yellow-400 to-amber-600' },
+            { id: 'c16', name: 'Nivel 10', desc: 'Alcanza el nivel 10', goal: 10, type: 'lvl', icon: '🌟', color: 'from-cyan-300 to-diamond' },
+            { id: 'c17', name: 'Maestro de Brazos', desc: '5 sesiones de Brazos', goal: 5, type: 'Brazos', icon: '💪', color: 'from-orange-500 to-red-600' },
+            { id: 'c18', name: 'Core Firme', desc: '5 sesiones de Core', goal: 5, type: 'Core', icon: '🧘', color: 'from-teal-300 to-emerald-500' },
+            { id: 'c19', name: 'Bestia del Cardio', desc: '5 sesiones de Cardio', goal: 5, type: 'Cardio', icon: '🏃', color: 'from-fuchsia-500 to-pink-600' },
+            { id: 'c20', name: 'Leyenda Viva', desc: 'Mueve 50,000kg en total', goal: 50000, type: 'vol', icon: '👑', color: 'from-amber-200 to-gold' }
+        ];
+
+        // --- ESTADO INICIAL ---
+        let state = JSON.parse(localStorage.getItem('gt_state')) || {
+            workouts: [],
+            exercises: [],
+            xp: 0,
+            level: 1,
+            stats: { vol: 0, sets: 0, count: 0, unique: [], max: 0 },
+            unlocked: []
+        };
+
+        let timer = { interval: null, seconds: 0, running: false };
+        let chartInstance = null;
+
+        function save() { localStorage.setItem('gt_state', JSON.stringify(state)); }
+
+        // --- NAVEGACIÓN ---
+        function switchTab(tabId) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.remove('tab-active');
+                b.classList.add('text-white/30');
+            });
+            
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('tab-active');
+            document.getElementById(`tab-${tabId}`).classList.remove('text-white/30');
+
+            if(tabId === 'challenges') renderChallenges();
+            if(tabId === 'history') renderHistory();
+            if(tabId === 'metrics') renderMetrics();
+        }
+
+        // --- LOGICA ENTRENAMIENTO ---
+        function handleAddExercise() {
+            const name = document.getElementById('input-ex-name').value;
+            const type = document.getElementById('input-ex-type').value;
+            if(!name) return;
+
+            state.exercises.push({
+                id: Date.now(),
+                name,
+                type,
+                sets: [{ id: Date.now()+1, weight: '', reps: '', done: false }]
+            });
+            renderWorkout();
+            closeModal();
+            document.getElementById('input-ex-name').value = '';
+        }
+
+        function addSet(exId) {
+            const ex = state.exercises.find(e => e.id === exId);
+            ex.sets.push({ id: Date.now(), weight: '', reps: '', done: false });
+            renderWorkout();
+        }
+
+        function toggleSet(exId, setId) {
+            const ex = state.exercises.find(e => e.id === exId);
+            const set = ex.sets.find(s => s.id === setId);
+            set.done = !set.done;
+            
+            if(set.done) {
+                // Ganar XP
+                const gain = 15 + Math.floor((set.weight || 0) / 5);
+                state.xp += gain;
+                checkLevel();
+                showToast("🏆", `+${gain} XP ganado`);
+                if(!timer.running) { resetTimer(); toggleTimer(); }
+            }
+            save();
+            renderWorkout();
+        }
+
+        function renderWorkout() {
+            const container = document.getElementById('active-exercises');
+            container.innerHTML = state.exercises.map(ex => `
+                <div class="glass-card rounded-[2.5rem] overflow-hidden">
+                    <div class="p-5 bg-white/5 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-sm font-black uppercase italic">${ex.name}</h4>
+                            <span class="text-[8px] font-bold text-mint uppercase tracking-widest">${ex.type}</span>
+                        </div>
+                        <button onclick="removeEx(${ex.id})" class="text-white/20 hover:text-red-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2.5"/></svg>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        ${ex.sets.map((s, i) => `
+                            <div class="flex gap-2 items-center">
+                                <span class="w-6 text-[10px] font-black text-white/20">${i+1}</span>
+                                <input type="number" value="${s.weight}" placeholder="kg" onchange="updateSet(${ex.id}, ${s.id}, 'weight', this.value)" class="flex-1 bg-white/5 rounded-xl p-3 text-center text-xs font-bold outline-none">
+                                <input type="number" value="${s.reps}" placeholder="reps" onchange="updateSet(${ex.id}, ${s.id}, 'reps', this.value)" class="flex-1 bg-white/5 rounded-xl p-3 text-center text-xs font-bold outline-none">
+                                <button onclick="toggleSet(${ex.id}, ${s.id})" class="w-10 h-10 rounded-xl flex items-center justify-center ${s.done ? 'bg-mint text-pine' : 'bg-white/5 text-white/20'}">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round"/></svg>
+                                </button>
+                            </div>
+                        `).join('')}
+                        <button onclick="addSet(${ex.id})" class="w-full py-2 text-[9px] font-black text-white/20 uppercase tracking-[0.3em]">+ Agregar Serie</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Totales sesión
+            let vol = 0;
+            state.exercises.forEach(ex => ex.sets.forEach(s => { if(s.done) vol += (s.weight * s.reps || 0); }));
+            document.getElementById('live-volume').innerText = vol.toLocaleString();
+            document.getElementById('btn-finish').classList.toggle('hidden', state.exercises.length === 0);
+            updateHeader();
+        }
+
+        function updateSet(exId, setId, key, val) {
+            const ex = state.exercises.find(e => e.id === exId);
+            const set = ex.sets.find(s => s.id === setId);
+            set[key] = parseFloat(val);
+            save();
+        }
+
+        function removeEx(id) {
+            state.exercises = state.exercises.filter(e => e.id !== id);
+            save();
+            renderWorkout();
+        }
+
+        function finishWorkout() {
+            const completedEx = state.exercises.filter(ex => ex.sets.some(s => s.done));
+            if(completedEx.length === 0) return;
+
+            let vol = 0;
+            let sets = 0;
+            let musculos = new Set();
+            let maxW = state.stats.max;
+
+            completedEx.forEach(ex => {
+                musculos.add(ex.type);
+                if(!state.stats.unique.includes(ex.name)) state.stats.unique.push(ex.name);
+                ex.sets.forEach(s => {
+                    if(s.done) {
+                        vol += (s.weight * s.reps || 0);
+                        sets++;
+                        if(s.weight > maxW) maxW = s.weight;
+                    }
+                });
+            });
+
+            const workout = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                vol,
+                sets,
+                muscles: Array.from(musculos),
+                duration: timer.seconds
+            };
+
+            state.workouts.unshift(workout);
+            state.stats.vol += vol;
+            state.stats.sets += sets;
+            state.stats.count++;
+            state.stats.max = maxW;
+            state.exercises = [];
+            
+            checkChallenges(workout);
+            resetTimer();
+            save();
+            switchTab('history');
+            renderWorkout();
+        }
+
+        // --- GAMIFICACIÓN ---
+        function checkLevel() {
+            const nextXP = state.level * 500;
+            if(state.xp >= nextXP) {
+                state.level++;
+                showToast("⚡", `¡Subiste al Nivel ${state.level}!`);
+                save();
+            }
+        }
+
+        function checkChallenges(lastW) {
+            const hour = new Date(lastW.date).getHours();
+            
+            CHALLENGES.forEach(c => {
+                if(state.unlocked.includes(c.id)) return;
+
+                let ok = false;
+                if(c.type === 'workouts') ok = state.stats.count >= c.goal;
+                else if(c.type === 'vol') ok = state.stats.vol >= c.goal;
+                else if(c.type === 'sets') ok = state.stats.sets >= c.goal;
+                else if(c.type === 'unique') ok = state.stats.unique.length >= c.goal;
+                else if(c.type === 'max_w') ok = state.stats.max >= c.goal;
+                else if(c.type === 'lvl') ok = state.level >= c.goal;
+                else if(c.type === 'morning') ok = hour < 9;
+                else if(c.type === 'night') ok = hour >= 21;
+                else if(c.type === 'time') ok = (lastW.duration / 60) >= c.goal;
+                else if(lastW.muscles.includes(c.type)) {
+                    const count = state.workouts.filter(w => w.muscles.includes(c.type)).length;
+                    ok = count >= c.goal;
+                }
+
+                if(ok) {
+                    state.unlocked.push(c.id);
+                    state.xp += 100;
+                    showToast(c.icon, `¡Reto superado: ${c.name}!`);
+                }
+            });
+        }
+
+        function renderChallenges() {
+            const container = document.getElementById('badges-container');
+            container.innerHTML = CHALLENGES.map(c => {
+                const isUnlocked = state.unlocked.includes(c.id);
+                return `
+                    <div class="glass-card p-6 rounded-[2.5rem] flex flex-col items-center text-center transition-all ${isUnlocked ? 'badge-unlocked scale-105' : 'badge-locked'}">
+                        <div class="w-16 h-16 rounded-3xl bg-gradient-to-br ${c.color} flex items-center justify-center text-3xl mb-4 shadow-xl">
+                            ${c.icon}
+                        </div>
+                        <h4 class="text-xs font-black uppercase tracking-tight mb-1 text-white">${c.name}</h4>
+                        <p class="text-[9px] text-white/40 leading-tight">${c.desc}</p>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('level-display').innerText = state.level;
+            document.getElementById('xp-current').innerText = state.xp;
+            const target = state.level * 500;
+            document.getElementById('xp-target').innerText = target;
+            document.getElementById('xp-bar').style.width = `${(state.xp / target) * 100}%`;
+        }
+
+        // --- HISTORIAL & MÉTRICAS ---
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            if(state.workouts.length === 0) {
+                container.innerHTML = `<div class="p-10 text-center text-white/20 italic text-sm">No hay entrenamientos aún</div>`;
+                return;
+            }
+            container.innerHTML = state.workouts.map(w => `
+                <div class="glass-card p-6 rounded-[2.5rem]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">${new Date(w.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })}</p>
+                            <h4 class="font-black italic uppercase text-lg">${w.muscles.join(' & ')}</h4>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-black">${w.vol.toLocaleString()} <span class="text-[10px] text-mint">KG</span></p>
+                            <p class="text-[10px] text-white/30 font-bold">${Math.floor(w.duration/60)} MIN</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black text-white/40 uppercase">${w.sets} SERIES</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMetrics() {
+            document.getElementById('stat-workouts').innerText = state.stats.count;
+            document.getElementById('stat-vol').innerText = (state.stats.vol / 1000).toFixed(1) + 'k';
+            document.getElementById('stat-max').innerText = state.stats.max + 'kg';
+
+            const ctx = document.getElementById('muscleChart').getContext('2d');
+            const musculos = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Core', 'Cardio'];
+            const data = musculos.map(m => state.workouts.filter(w => w.muscles.includes(m)).length);
+
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: musculos,
+                    datasets: [{
+                        label: 'Frecuencia',
+                        data: data,
+                        borderColor: '#2dd4bf',
+                        backgroundColor: 'rgba(45, 212, 191, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#2dd4bf'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold' } },
+                            ticks: { display: false, stepSize: 1 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- UTILIDADES ---
+        function toggleTimer() {
+            if(timer.running) {
+                clearInterval(timer.interval);
+                document.getElementById('btn-timer').innerText = 'Reanudar';
+                document.getElementById('timer-dot').classList.remove('bg-mint', 'animate-pulse');
+            } else {
+                timer.interval = setInterval(() => {
+                    timer.seconds++;
+                    updateTimerUI();
+                }, 1000);
+                document.getElementById('btn-timer').innerText = 'Pausar';
+                document.getElementById('timer-dot').classList.add('bg-mint', 'animate-pulse');
+            }
+            timer.running = !timer.running;
+        }
+
+        function resetTimer() {
+            clearInterval(timer.interval);
+            timer.seconds = 0;
+            timer.running = false;
+            updateTimerUI();
+            document.getElementById('btn-timer').innerText = 'Iniciar';
+            document.getElementById('timer-dot').classList.remove('bg-mint', 'animate-pulse');
+        }
+
+        function updateTimerUI() {
+            const m = Math.floor(timer.seconds / 60);
+            const s = timer.seconds % 60;
+            document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function updateHeader() {
+            document.getElementById('total-xp-header').innerText = state.xp.toLocaleString();
+            const ranks = ['Novato', 'Iniciado', 'Atleta', 'Guerrero', 'Élite', 'Maestro', 'Bestia', 'Titán', 'Leyenda', 'Dios'];
+            const rIdx = Math.min(Math.floor(state.level / 2), ranks.length - 1);
+            document.getElementById('user-rank').innerText = `Nivel ${state.level} · ${ranks[rIdx]}`;
+        }
+
+        function showToast(icon, msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-icon').innerText = icon;
+            document.getElementById('toast-msg').innerText = msg;
+            t.classList.remove('opacity-0', 'pointer-events-none', 'top-10');
+            t.classList.add('top-16');
+            setTimeout(() => {
+                t.classList.add('opacity-0', 'pointer-events-none', 'top-10');
+                t.classList.remove('top-16');
+            }, 3000);
+        }
+
+        function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+        // Inicialización
+        updateHeader();
+        renderWorkout();
+    </script>
+</body>
+</html>
