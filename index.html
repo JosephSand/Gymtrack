@@ -169,7 +169,6 @@
             </div>
 
             <div class="glass-card p-6 rounded-[2.5rem]">
-                <!-- Header de días de la semana -->
                 <div class="grid grid-cols-7 mb-2">
                     <div class="calendar-header-day">Lun</div>
                     <div class="calendar-header-day">Mar</div>
@@ -190,9 +189,19 @@
                 <div id="day-workouts-list" class="space-y-2"></div>
             </div>
 
+            <!-- Gráfica de Volumen (Radar) -->
             <div class="glass-card p-8 rounded-[3rem]">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6 text-center italic">Volumen por Músculo (lb)</h4>
                 <div class="relative h-[250px]">
                     <canvas id="muscleChart"></canvas>
+                </div>
+            </div>
+
+            <!-- NUEVA: Gráfica de Frecuencia (Barras) -->
+            <div class="glass-card p-8 rounded-[3rem]">
+                <h4 class="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6 text-center italic">Frecuencia de Entrenamiento (Veces)</h4>
+                <div class="relative h-[200px]">
+                    <canvas id="frequencyChart"></canvas>
                 </div>
             </div>
         </section>
@@ -268,40 +277,29 @@
 
     <script>
         const ACHIEVEMENTS_DEF = [
-            // General Workouts
             { id: 'first_step', title: 'Primer Paso', desc: 'Completa 1 entrenamiento', target: 1, type: 'workouts', color: 'mint', icon: '🔥' },
             { id: 'consistency_3', title: 'Tridente', desc: 'Completa 3 entrenamientos', target: 3, type: 'workouts', color: 'emerald', icon: '🔱' },
             { id: 'gym_rat', title: 'Rata de Gimnasio', desc: 'Completa 10 entrenamientos', target: 10, type: 'workouts', color: 'ruby', icon: '🐀' },
             { id: 'warrior', title: 'Guerrero Eterno', desc: 'Completa 25 entrenamientos', target: 25, type: 'workouts', color: 'diamond', icon: '⚔️' },
-            
-            // Single Session Volume
             { id: 'vol_2k', title: 'Tonelada Corta', desc: '2,000lb en una sesión', target: 2000, type: 'volume_single', color: 'gold', icon: '⚖️' },
             { id: 'vol_5k', title: 'Fuerza Bruta', desc: '5,000lb en una sesión', target: 5000, type: 'volume_single', color: 'ruby', icon: '🔨' },
             { id: 'vol_10k', title: 'Leyenda de Hierro', desc: '10,000lb en una sesión', target: 10000, type: 'volume_single', color: 'diamond', icon: '👑' },
-
-            // Total Volume
             { id: 'total_50k', title: 'Titán Novato', desc: '50,000lb acumuladas', target: 50000, type: 'total_volume', color: 'mint', icon: '⛰️' },
             { id: 'total_100k', title: 'Montaña de Músculo', desc: '100,000lb acumuladas', target: 100000, type: 'total_volume', color: 'gold', icon: '🏔️' },
-
-            // Muscle Groups
             { id: 'chest_king', title: 'Pecho de Acero', desc: '5 sesiones de Pecho', target: 5, type: 'muscle_Pecho', color: 'mint', icon: '🛡️' },
             { id: 'back_beast', title: 'Espalda de Titán', desc: '5 sesiones de Espalda', target: 5, type: 'muscle_Espalda', color: 'emerald', icon: '🦅' },
             { id: 'leg_day_master', title: 'Pilar Inamovible', desc: '5 sesiones de Piernas', target: 5, type: 'muscle_Piernas', color: 'ruby', icon: '🦵' },
             { id: 'shoulder_boulder', title: 'Hombros de Piedra', desc: '5 sesiones de Hombros', target: 5, type: 'muscle_Hombros', color: 'gold', icon: '🗿' },
             { id: 'abs_warrior', title: 'Núcleo de Poder', desc: '5 sesiones de Abdomen', target: 5, type: 'muscle_Abdomen', color: 'diamond', icon: '💎' },
-
-            // XP & Levels
             { id: 'lvl_5', title: 'Prestigio I', desc: 'Alcanza el Nivel 5', target: 4000, type: 'total_xp', color: 'mint', icon: '⭐' },
             { id: 'lvl_10', title: 'Prestigio II', desc: 'Alcanza el Nivel 10', target: 9000, type: 'total_xp', color: 'gold', icon: '🌟' },
-
-            // Time & Sets
             { id: 'sets_100', title: 'Máquina de Repes', desc: '100 series completadas', target: 100, type: 'total_sets', color: 'emerald', icon: '⚡' },
             { id: 'time_marathon', title: 'Sesión Épica', desc: 'Entrena 90 min (una vez)', target: 5400, type: 'duration_single', color: 'ruby', icon: '⏱️' },
             { id: 'early_bird', title: 'Madrugador', desc: 'Entrena antes de las 9 AM', target: 1, type: 'early_train', color: 'gold', icon: '☀️' },
             { id: 'night_owl', title: 'Búho Nocturno', desc: 'Entrena después de las 10 PM', target: 1, type: 'late_train', color: 'diamond', icon: '🌙' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('gt_v10_state')) || {
+        let state = JSON.parse(localStorage.getItem('gt_v11_state')) || {
             workouts: [],
             activeExercises: [],
             xp: 0,
@@ -310,22 +308,20 @@
 
         let viewDate = new Date();
         let timer = { interval: null, seconds: 0, running: false };
-        let chartInstance = null;
+        let volChart = null;
+        let freqChart = null;
         let selectedManualDate = null;
         let selectedManualMuscle = null;
 
-        function save() { localStorage.setItem('gt_v10_state', JSON.stringify(state)); }
+        function save() { localStorage.setItem('gt_v11_state', JSON.stringify(state)); }
 
         function switchTab(tabId) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('tab-active');
-                b.classList.add('text-white/30');
+                b.classList.remove('tab-active', 'text-white/30');
+                b.classList.add(b.id === `tab-${tabId}` ? 'tab-active' : 'text-white/30');
             });
             document.getElementById(`content-${tabId}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabId}`).classList.add('tab-active');
-            document.getElementById(`tab-${tabId}`).classList.remove('text-white/30');
-
             if(tabId === 'metrics') renderMetrics();
             if(tabId === 'history') renderHistory();
             if(tabId === 'achievements') renderAchievements();
@@ -370,7 +366,7 @@
                 <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
                     <div>
                         <p class="text-[9px] font-black uppercase text-mint italic tracking-widest">${Object.keys(w.muscles).join(', ')}</p>
-                        <p class="text-sm font-bold text-white mt-1">${w.vol.toLocaleString()} lb <span class="text-white/20 text-[9px] uppercase font-black">volumen</span></p>
+                        <p class="text-sm font-bold text-white mt-1">${w.vol.toLocaleString()} lb</p>
                     </div>
                     <button onclick="deleteWorkout(${w.id})" class="w-10 h-10 rounded-xl bg-ruby/10 flex items-center justify-center text-ruby">✕</button>
                 </div>
@@ -379,7 +375,7 @@
 
         function deleteWorkout(id) {
             state.workouts = state.workouts.filter(w => w.id !== id);
-            save(); renderDayWorkouts(); renderCalendar(); renderChart(); updateHeader();
+            save(); renderMetrics(); updateHeader();
         }
 
         // --- REGISTRO MANUAL ---
@@ -394,22 +390,19 @@
             });
             document.getElementById('modal-manual').classList.remove('hidden');
         }
-
         function closeManualModal() { document.getElementById('modal-manual').classList.add('hidden'); }
-
         function selectMuscleManual(muscle) {
             selectedManualMuscle = muscle;
             document.querySelectorAll('.muscle-opt').forEach(opt => {
-                if(opt.innerText === muscle.toUpperCase()) {
-                    opt.classList.add('bg-mint', 'text-pine', 'border-mint');
-                    opt.classList.remove('bg-white/5', 'text-white', 'border-white/5');
-                } else {
-                    opt.classList.remove('bg-mint', 'text-pine', 'border-mint');
-                    opt.classList.add('bg-white/5', 'text-white', 'border-white/5');
-                }
+                const isActive = opt.innerText === muscle.toUpperCase();
+                opt.classList.toggle('bg-mint', isActive);
+                opt.classList.toggle('text-pine', isActive);
+                opt.classList.toggle('border-mint', isActive);
+                opt.classList.toggle('bg-white/5', !isActive);
+                opt.classList.toggle('text-white', !isActive);
+                opt.classList.toggle('border-white/5', !isActive);
             });
         }
-
         function confirmManualEntry() {
             const weight = parseFloat(document.getElementById('manual-weight-input').value);
             if(!selectedManualDate || !selectedManualMuscle || !weight) return;
@@ -426,22 +419,28 @@
             save(); renderMetrics(); updateHeader(); closeManualModal(); renderDayWorkouts();
         }
 
-        // --- GRÁFICO ---
-        function renderChart() {
-            const ctx = document.getElementById('muscleChart').getContext('2d');
+        // --- GRÁFICAS ---
+        function renderCharts() {
             const labels = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Core', 'Abdomen'];
             const monthly = state.workouts.filter(w => {
                 const d = new Date(w.date);
                 return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
             });
-            const data = labels.map(l => monthly.reduce((acc, w) => acc + (w.muscles[l] || 0), 0));
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
+
+            // Datos Volumen
+            const volData = labels.map(l => monthly.reduce((acc, w) => acc + (w.muscles[l] || 0), 0));
+            // Datos Frecuencia
+            const freqData = labels.map(l => monthly.filter(w => w.muscles[l]).length);
+
+            // Radar Volumen
+            const ctxV = document.getElementById('muscleChart').getContext('2d');
+            if(volChart) volChart.destroy();
+            volChart = new Chart(ctxV, {
                 type: 'radar',
                 data: {
                     labels,
                     datasets: [{
-                        data,
+                        data: volData,
                         borderColor: '#2dd4bf',
                         backgroundColor: 'rgba(45, 212, 191, 0.1)',
                         pointBackgroundColor: '#2dd4bf'
@@ -453,9 +452,34 @@
                     plugins: { legend: { display: false } }
                 }
             });
+
+            // Barras Frecuencia
+            const ctxF = document.getElementById('frequencyChart').getContext('2d');
+            if(freqChart) freqChart.destroy();
+            freqChart = new Chart(ctxF, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: freqData,
+                        backgroundColor: 'rgba(45, 212, 191, 0.4)',
+                        borderColor: '#2dd4bf',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { 
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 8, weight: 'bold' } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 8 }, stepSize: 1 } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
 
-        // --- WORKOUT ---
+        // --- WORKOUT LOGIC ---
         function handleAddExercise() {
             const name = document.getElementById('input-ex-name').value;
             const type = document.getElementById('input-ex-type').value;
@@ -464,7 +488,6 @@
             renderWorkout(); closeModal();
             document.getElementById('input-ex-name').value = '';
         }
-
         function renderWorkout() {
             const container = document.getElementById('active-exercises');
             container.innerHTML = state.activeExercises.map(ex => `
@@ -493,7 +516,6 @@
             `).join('');
             document.getElementById('btn-finish').classList.toggle('hidden', state.activeExercises.length === 0);
         }
-
         function removeEx(id) { state.activeExercises = state.activeExercises.filter(e => e.id !== id); renderWorkout(); save(); }
         function addSet(exId) { state.activeExercises.find(e => e.id === exId).sets.push({ id: Date.now(), weight: '', reps: '', done: false }); renderWorkout(); save(); }
         function updateSet(exId, setId, key, val) { const ex = state.activeExercises.find(e => e.id === exId); const set = ex.sets.find(s => s.id === setId); set[key] = parseFloat(val); save(); }
@@ -504,7 +526,6 @@
             if(set.done) state.xp += 25;
             save(); renderWorkout(); updateHeader();
         }
-
         function finishWorkout() {
             const completed = state.activeExercises.filter(ex => ex.sets.some(s => s.done));
             if(completed.length === 0) return;
@@ -521,36 +542,29 @@
             resetTimer(); save(); switchTab('metrics'); updateHeader();
         }
 
-        // --- LOGROS ---
+        // --- UI & UPDATES ---
         function renderAchievements() {
             const container = document.getElementById('achievements-list');
             let unlockedCount = 0;
-            
             const html = ACHIEVEMENTS_DEF.map(ach => {
                 const prog = calculateProgress(ach);
                 const isUnlocked = prog.current >= ach.target;
                 if(isUnlocked) unlockedCount++;
                 const percent = Math.min(100, (prog.current / ach.target) * 100);
-                const glowClass = isUnlocked ? `glow-${ach.color}` : '';
                 const colorHex = { mint: '#2dd4bf', gold: '#fbbf24', ruby: '#ef4444', diamond: '#60a5fa', emerald: '#10b981' }[ach.color];
-                
                 return `
-                    <div class="glass-card p-5 rounded-[2rem] achievement-card ${isUnlocked ? 'achievement-unlocked ' + glowClass : 'achievement-locked'}">
+                    <div class="glass-card p-5 rounded-[2rem] achievement-card ${isUnlocked ? 'achievement-unlocked glow-'+ach.color : 'achievement-locked'}">
                         <div class="flex items-center gap-4">
                             <div class="text-3xl filter drop-shadow-lg">${ach.icon}</div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="text-xs font-black uppercase italic ${isUnlocked ? 'text-white' : 'text-white/40'} truncate">${ach.title}</h4>
                                 <p class="text-[9px] text-white/30 font-bold uppercase tracking-tight mt-0.5">${ach.desc}</p>
-                                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mt-3">
-                                    <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${colorHex}"></div>
-                                </div>
+                                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mt-3"><div class="h-full" style="width: ${percent}%; background-color: ${colorHex}"></div></div>
                                 <div class="flex justify-between mt-2"><span class="text-[8px] font-black uppercase text-white/30">${Math.floor(prog.current).toLocaleString()} / ${ach.target.toLocaleString()}</span></div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
-            
             container.innerHTML = html;
             document.getElementById('achievements-count').innerText = `${unlockedCount} / 20 LOGROS DESBLOQUEADOS`;
             document.getElementById('achievements-progress-bar').style.width = `${(unlockedCount / 20) * 100}%`;
@@ -565,26 +579,13 @@
                 case 'total_sets': current = state.workouts.reduce((acc, w) => acc + w.setsCount, 0); break;
                 case 'volume_single': current = state.workouts.length ? Math.max(...state.workouts.map(w => w.vol)) : 0; break;
                 case 'duration_single': current = state.workouts.length ? Math.max(...state.workouts.map(w => w.duration)) : 0; break;
-                case 'early_train': 
-                    current = state.workouts.some(w => {
-                        const h = new Date(w.date).getHours();
-                        return h < 9 && !w.manual;
-                    }) ? 1 : 0; break;
-                case 'late_train': 
-                    current = state.workouts.some(w => {
-                        const h = new Date(w.date).getHours();
-                        return h >= 22 && !w.manual;
-                    }) ? 1 : 0; break;
-                default: 
-                    if(ach.type.startsWith('muscle_')) { 
-                        const mName = ach.type.replace('muscle_', '');
-                        current = state.workouts.filter(w => w.muscles[mName]).length; 
-                    }
+                case 'early_train': current = state.workouts.some(w => new Date(w.date).getHours() < 9 && !w.manual) ? 1 : 0; break;
+                case 'late_train': current = state.workouts.some(w => new Date(w.date).getHours() >= 22 && !w.manual) ? 1 : 0; break;
+                default: if(ach.type.startsWith('muscle_')) current = state.workouts.filter(w => w.muscles[ach.type.replace('muscle_', '')]).length;
             }
             return { current };
         }
 
-        // --- TIMER & UI ---
         function toggleTimer() {
             if(timer.running) { clearInterval(timer.interval); document.getElementById('btn-timer').innerText = 'Reanudar'; }
             else { timer.interval = setInterval(() => { timer.seconds++; updateTimerUI(); }, 1000); document.getElementById('btn-timer').innerText = 'Pausar'; document.getElementById('timer-dot').classList.add('bg-mint', 'animate-pulse'); }
@@ -601,8 +602,7 @@
                     <span class="text-[10px] font-black text-mint uppercase tracking-widest">${new Date(w.date).toLocaleDateString()}</span>
                     <h4 class="text-xs font-black uppercase italic mt-1">${Object.keys(w.muscles).join(', ')}</h4>
                     <p class="text-sm font-black mt-2">${w.vol.toLocaleString()} lb</p>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
         function updateHeader() {
@@ -613,7 +613,7 @@
 
         function openModal() { document.getElementById('modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-        function renderMetrics() { renderCalendar(); renderChart(); if(selectedManualDate) renderDayWorkouts(); }
+        function renderMetrics() { renderCalendar(); renderCharts(); if(selectedManualDate) renderDayWorkouts(); }
         function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderMetrics(); }
 
         updateHeader();
