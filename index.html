@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GymTrack Pro | Entrenamiento & Logros</title>
+    <title>GymTrack Pro | Logros Mensuales</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -208,8 +208,9 @@
 
         <!-- Tab: Achievements -->
         <section id="content-achievements" class="hidden space-y-6 pb-10">
-            <div class="flex flex-col items-center justify-center py-4">
-                <div id="achievements-count" class="text-[10px] font-black uppercase text-mint tracking-[0.2em] mb-2 italic">0 / 20 LOGROS DESBLOQUEADOS</div>
+            <div class="flex flex-col items-center justify-center py-4 text-center">
+                <div id="achievements-month-label" class="text-[10px] font-black uppercase text-mint/40 tracking-widest mb-1 italic">PROGRESO MENSUAL</div>
+                <div id="achievements-count" class="text-xs font-black uppercase text-mint tracking-[0.2em] mb-3 italic">0 / 20 LOGROS DESBLOQUEADOS</div>
                 <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
                     <div id="achievements-progress-bar" class="h-full bg-mint transition-all duration-700" style="width: 0%"></div>
                 </div>
@@ -277,29 +278,29 @@
 
     <script>
         const ACHIEVEMENTS_DEF = [
-            { id: 'first_step', title: 'Primer Paso', desc: 'Completa 1 entrenamiento', target: 1, type: 'workouts', color: 'mint', icon: '🔥' },
-            { id: 'consistency_3', title: 'Tridente', desc: 'Completa 3 entrenamientos', target: 3, type: 'workouts', color: 'emerald', icon: '🔱' },
-            { id: 'gym_rat', title: 'Rata de Gimnasio', desc: 'Completa 10 entrenamientos', target: 10, type: 'workouts', color: 'ruby', icon: '🐀' },
-            { id: 'warrior', title: 'Guerrero Eterno', desc: 'Completa 25 entrenamientos', target: 25, type: 'workouts', color: 'diamond', icon: '⚔️' },
-            { id: 'vol_2k', title: 'Tonelada Corta', desc: '2,000lb en una sesión', target: 2000, type: 'volume_single', color: 'gold', icon: '⚖️' },
-            { id: 'vol_5k', title: 'Fuerza Bruta', desc: '5,000lb en una sesión', target: 5000, type: 'volume_single', color: 'ruby', icon: '🔨' },
-            { id: 'vol_10k', title: 'Leyenda de Hierro', desc: '10,000lb en una sesión', target: 10000, type: 'volume_single', color: 'diamond', icon: '👑' },
-            { id: 'total_50k', title: 'Titán Novato', desc: '50,000lb acumuladas', target: 50000, type: 'total_volume', color: 'mint', icon: '⛰️' },
-            { id: 'total_100k', title: 'Montaña de Músculo', desc: '100,000lb acumuladas', target: 100000, type: 'total_volume', color: 'gold', icon: '🏔️' },
-            { id: 'chest_king', title: 'Pecho de Acero', desc: '5 sesiones de Pecho', target: 5, type: 'muscle_Pecho', color: 'mint', icon: '🛡️' },
-            { id: 'back_beast', title: 'Espalda de Titán', desc: '5 sesiones de Espalda', target: 5, type: 'muscle_Espalda', color: 'emerald', icon: '🦅' },
-            { id: 'leg_day_master', title: 'Pilar Inamovible', desc: '5 sesiones de Piernas', target: 5, type: 'muscle_Piernas', color: 'ruby', icon: '🦵' },
-            { id: 'shoulder_boulder', title: 'Hombros de Piedra', desc: '5 sesiones de Hombros', target: 5, type: 'muscle_Hombros', color: 'gold', icon: '🗿' },
-            { id: 'abs_warrior', title: 'Núcleo de Poder', desc: '5 sesiones de Abdomen', target: 5, type: 'muscle_Abdomen', color: 'diamond', icon: '💎' },
-            { id: 'lvl_5', title: 'Prestigio I', desc: 'Alcanza el Nivel 5', target: 4000, type: 'total_xp', color: 'mint', icon: '⭐' },
-            { id: 'lvl_10', title: 'Prestigio II', desc: 'Alcanza el Nivel 10', target: 9000, type: 'total_xp', color: 'gold', icon: '🌟' },
-            { id: 'sets_100', title: 'Máquina de Repes', desc: '100 series completadas', target: 100, type: 'total_sets', color: 'emerald', icon: '⚡' },
-            { id: 'time_marathon', title: 'Sesión Épica', desc: 'Entrena 90 min (una vez)', target: 5400, type: 'duration_single', color: 'ruby', icon: '⏱️' },
-            { id: 'early_bird', title: 'Madrugador', desc: 'Entrena antes de las 9 AM', target: 1, type: 'early_train', color: 'gold', icon: '☀️' },
-            { id: 'night_owl', title: 'Búho Nocturno', desc: 'Entrena después de las 10 PM', target: 1, type: 'late_train', color: 'diamond', icon: '🌙' }
+            { id: 'first_step', title: 'Primer Paso', desc: 'Completa 1 entrenamiento este mes', target: 1, type: 'workouts', color: 'mint', icon: '🔥' },
+            { id: 'consistency_3', title: 'Tridente', desc: 'Completa 3 entrenamientos este mes', target: 3, type: 'workouts', color: 'emerald', icon: '🔱' },
+            { id: 'gym_rat', title: 'Rata de Gimnasio', desc: 'Completa 10 entrenamientos este mes', target: 10, type: 'workouts', color: 'ruby', icon: '🐀' },
+            { id: 'warrior', title: 'Guerrero Eterno', desc: 'Completa 25 entrenamientos este mes', target: 25, type: 'workouts', color: 'diamond', icon: '⚔️' },
+            { id: 'vol_2k', title: 'Tonelada Corta', desc: '2,000lb en una sesión este mes', target: 2000, type: 'volume_single', color: 'gold', icon: '⚖️' },
+            { id: 'vol_5k', title: 'Fuerza Bruta', desc: '5,000lb en una sesión este mes', target: 5000, type: 'volume_single', color: 'ruby', icon: '🔨' },
+            { id: 'vol_10k', title: 'Leyenda de Hierro', desc: '10,000lb en una sesión este mes', target: 10000, type: 'volume_single', color: 'diamond', icon: '👑' },
+            { id: 'total_50k', title: 'Titán del Mes', desc: '50,000lb acumuladas este mes', target: 50000, type: 'total_volume', color: 'mint', icon: '⛰️' },
+            { id: 'total_100k', title: 'Montaña Mensual', desc: '100,000lb acumuladas este mes', target: 100000, type: 'total_volume', color: 'gold', icon: '🏔️' },
+            { id: 'chest_king', title: 'Pecho de Acero', desc: '5 sesiones de Pecho este mes', target: 5, type: 'muscle_Pecho', color: 'mint', icon: '🛡️' },
+            { id: 'back_beast', title: 'Espalda de Titán', desc: '5 sesiones de Espalda este mes', target: 5, type: 'muscle_Espalda', color: 'emerald', icon: '🦅' },
+            { id: 'leg_day_master', title: 'Pilar Inamovible', desc: '5 sesiones de Piernas este mes', target: 5, type: 'muscle_Piernas', color: 'ruby', icon: '🦵' },
+            { id: 'shoulder_boulder', title: 'Hombros de Piedra', desc: '5 sesiones de Hombros este mes', target: 5, type: 'muscle_Hombros', color: 'gold', icon: '🗿' },
+            { id: 'abs_warrior', title: 'Núcleo de Poder', desc: '5 sesiones de Abdomen este mes', target: 5, type: 'muscle_Abdomen', color: 'diamond', icon: '💎' },
+            { id: 'lvl_5', title: 'Prestigio I', desc: 'Gana 2,000 XP este mes', target: 2000, type: 'total_xp', color: 'mint', icon: '⭐' },
+            { id: 'lvl_10', title: 'Prestigio II', desc: 'Gana 5,000 XP este mes', target: 5000, type: 'total_xp', color: 'gold', icon: '🌟' },
+            { id: 'sets_100', title: 'Máquina de Repes', desc: '100 series este mes', target: 100, type: 'total_sets', color: 'emerald', icon: '⚡' },
+            { id: 'time_marathon', title: 'Sesión Épica', desc: 'Sesión de 60 min este mes', target: 3600, type: 'duration_single', color: 'ruby', icon: '⏱️' },
+            { id: 'early_bird', title: 'Madrugador', desc: 'Entrena antes de las 9 AM este mes', target: 1, type: 'early_train', color: 'gold', icon: '☀️' },
+            { id: 'night_owl', title: 'Búho Nocturno', desc: 'Entrena después de las 10 PM este mes', target: 1, type: 'late_train', color: 'diamond', icon: '🌙' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('gt_v11_state')) || {
+        let state = JSON.parse(localStorage.getItem('gt_v12_state')) || {
             workouts: [],
             activeExercises: [],
             xp: 0,
@@ -313,7 +314,7 @@
         let selectedManualDate = null;
         let selectedManualMuscle = null;
 
-        function save() { localStorage.setItem('gt_v11_state', JSON.stringify(state)); }
+        function save() { localStorage.setItem('gt_v12_state', JSON.stringify(state)); }
 
         function switchTab(tabId) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -328,12 +329,13 @@
         }
 
         // --- CALENDARIO ---
+        const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
             const label = document.getElementById('calendar-month-year');
-            const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             grid.innerHTML = '';
-            label.innerText = `${months[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+            label.innerText = `${MONTHS_ES[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
             const firstDayIndex = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
             const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
             let offset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
@@ -413,7 +415,8 @@
                 vol: weight,
                 setsCount: 3,
                 duration: 1800,
-                manual: true
+                manual: true,
+                xpEarned: 100
             });
             state.xp += 100;
             save(); renderMetrics(); updateHeader(); closeManualModal(); renderDayWorkouts();
@@ -427,12 +430,9 @@
                 return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
             });
 
-            // Datos Volumen
             const volData = labels.map(l => monthly.reduce((acc, w) => acc + (w.muscles[l] || 0), 0));
-            // Datos Frecuencia
             const freqData = labels.map(l => monthly.filter(w => w.muscles[l]).length);
 
-            // Radar Volumen
             const ctxV = document.getElementById('muscleChart').getContext('2d');
             if(volChart) volChart.destroy();
             volChart = new Chart(ctxV, {
@@ -453,7 +453,6 @@
                 }
             });
 
-            // Barras Frecuencia
             const ctxF = document.getElementById('frequencyChart').getContext('2d');
             if(freqChart) freqChart.destroy();
             freqChart = new Chart(ctxF, {
@@ -536,18 +535,21 @@
                 musclesMap[ex.type] = (musclesMap[ex.type] || 0) + exVol;
                 vol += exVol;
             });
-            state.workouts.unshift({ id: Date.now(), date: new Date().toISOString(), muscles: musclesMap, vol, setsCount, duration: timer.seconds });
+            state.workouts.unshift({ id: Date.now(), date: new Date().toISOString(), muscles: musclesMap, vol, setsCount, duration: timer.seconds, xpEarned: 150 });
             state.activeExercises = [];
             state.xp += 150;
             resetTimer(); save(); switchTab('metrics'); updateHeader();
         }
 
-        // --- UI & UPDATES ---
+        // --- UI & LOGROS MENSUALES ---
         function renderAchievements() {
             const container = document.getElementById('achievements-list');
+            const monthLabel = document.getElementById('achievements-month-label');
+            monthLabel.innerText = `RETO DE ${MONTHS_ES[viewDate.getMonth()].toUpperCase()} ${viewDate.getFullYear()}`;
+            
             let unlockedCount = 0;
             const html = ACHIEVEMENTS_DEF.map(ach => {
-                const prog = calculateProgress(ach);
+                const prog = calculateMonthlyProgress(ach);
                 const isUnlocked = prog.current >= ach.target;
                 if(isUnlocked) unlockedCount++;
                 const percent = Math.min(100, (prog.current / ach.target) * 100);
@@ -566,22 +568,27 @@
                     </div>`;
             }).join('');
             container.innerHTML = html;
-            document.getElementById('achievements-count').innerText = `${unlockedCount} / 20 LOGROS DESBLOQUEADOS`;
-            document.getElementById('achievements-progress-bar').style.width = `${(unlockedCount / 20) * 100}%`;
+            document.getElementById('achievements-count').innerText = `${unlockedCount} / ${ACHIEVEMENTS_DEF.length} LOGROS DESBLOQUEADOS`;
+            document.getElementById('achievements-progress-bar').style.width = `${(unlockedCount / ACHIEVEMENTS_DEF.length) * 100}%`;
         }
 
-        function calculateProgress(ach) {
+        function calculateMonthlyProgress(ach) {
+            const monthlyWorkouts = state.workouts.filter(w => {
+                const d = new Date(w.date);
+                return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
+            });
+
             let current = 0;
             switch(ach.type) {
-                case 'workouts': current = state.workouts.length; break;
-                case 'total_xp': current = state.xp; break;
-                case 'total_volume': current = state.workouts.reduce((acc, w) => acc + w.vol, 0); break;
-                case 'total_sets': current = state.workouts.reduce((acc, w) => acc + w.setsCount, 0); break;
-                case 'volume_single': current = state.workouts.length ? Math.max(...state.workouts.map(w => w.vol)) : 0; break;
-                case 'duration_single': current = state.workouts.length ? Math.max(...state.workouts.map(w => w.duration)) : 0; break;
-                case 'early_train': current = state.workouts.some(w => new Date(w.date).getHours() < 9 && !w.manual) ? 1 : 0; break;
-                case 'late_train': current = state.workouts.some(w => new Date(w.date).getHours() >= 22 && !w.manual) ? 1 : 0; break;
-                default: if(ach.type.startsWith('muscle_')) current = state.workouts.filter(w => w.muscles[ach.type.replace('muscle_', '')]).length;
+                case 'workouts': current = monthlyWorkouts.length; break;
+                case 'total_xp': current = monthlyWorkouts.reduce((acc, w) => acc + (w.xpEarned || 0), 0); break;
+                case 'total_volume': current = monthlyWorkouts.reduce((acc, w) => acc + w.vol, 0); break;
+                case 'total_sets': current = monthlyWorkouts.reduce((acc, w) => acc + w.setsCount, 0); break;
+                case 'volume_single': current = monthlyWorkouts.length ? Math.max(...monthlyWorkouts.map(w => w.vol)) : 0; break;
+                case 'duration_single': current = monthlyWorkouts.length ? Math.max(...monthlyWorkouts.map(w => w.duration)) : 0; break;
+                case 'early_train': current = monthlyWorkouts.some(w => new Date(w.date).getHours() < 9 && !w.manual) ? 1 : 0; break;
+                case 'late_train': current = monthlyWorkouts.some(w => new Date(w.date).getHours() >= 22 && !w.manual) ? 1 : 0; break;
+                default: if(ach.type.startsWith('muscle_')) current = monthlyWorkouts.filter(w => w.muscles[ach.type.replace('muscle_', '')]).length;
             }
             return { current };
         }
@@ -614,7 +621,7 @@
         function openModal() { document.getElementById('modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
         function renderMetrics() { renderCalendar(); renderCharts(); if(selectedManualDate) renderDayWorkouts(); }
-        function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderMetrics(); }
+        function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderMetrics(); renderAchievements(); }
 
         updateHeader();
         renderWorkout();
