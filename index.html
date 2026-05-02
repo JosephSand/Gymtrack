@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GymTrack Pro | Logros Mensuales</title>
+    <title>GymTrack Pro Elite</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,9 +19,10 @@
                         mint: '#2dd4bf',
                         dark: '#0a0a0a',
                         gold: '#fbbf24',
-                        ruby: '#ef4444',
-                        diamond: '#60a5fa',
-                        emerald: '#10b981'
+                        ruby: '#f43f5e',
+                        sky: '#0ea5e9',
+                        lime: '#84cc16',
+                        violet: '#8b5cf6'
                     }
                 }
             }
@@ -29,602 +30,601 @@
     </script>
 
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.05);
-        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-color);
+            background-color: #060606;
             color: #ffffff;
             -webkit-tap-highlight-color: transparent;
             overflow-x: hidden;
         }
         .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .tab-active {
-            color: #2dd4bf;
-            border-bottom: 3px solid #2dd4bf;
-        }
-        .accent-button {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-            box-shadow: 0 10px 20px rgba(6, 78, 59, 0.3);
-        }
-        .calendar-day {
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            border-radius: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-            position: relative;
-        }
-        .calendar-day:active { transform: scale(0.9); }
-        .calendar-day.selected {
-            border-color: #2dd4bf;
-            background: rgba(45, 212, 191, 0.1);
-        }
-        .calendar-day.has-workout {
-            background: rgba(45, 212, 191, 0.15);
-            color: #2dd4bf;
+        .tab-active { color: #2dd4bf; border-bottom: 3px solid #2dd4bf; }
+        .muscle-btn-active { 
+            background: linear-gradient(135deg, #2dd4bf, #0ea5e9) !important; 
+            color: #064e3b !important; 
             font-weight: 800;
         }
-        .calendar-header-day {
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
-            padding-bottom: 0.5rem;
-        }
         .achievement-card {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s ease;
-        }
-        .achievement-locked {
-            filter: grayscale(1) opacity(0.3);
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            transition: all 0.3s ease;
         }
         .achievement-unlocked {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transform: scale(1.02);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(45, 212, 191, 0.2);
         }
-        .glow-mint { box-shadow: 0 0 20px rgba(45, 212, 191, 0.3); border-color: rgba(45, 212, 191, 0.4) !important; }
-        .glow-gold { box-shadow: 0 0 20px rgba(251, 191, 36, 0.3); border-color: rgba(251, 191, 36, 0.4) !important; }
-        .glow-ruby { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.4) !important; }
-        .glow-diamond { box-shadow: 0 0 20px rgba(96, 165, 250, 0.3); border-color: rgba(96, 165, 250, 0.4) !important; }
-        .glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.4) !important; }
+        .calendar-day { 
+            aspect-ratio: 1; 
+            border-radius: 6px; 
+            background: rgba(255,255,255,0.05); 
+            transition: transform 0.2s;
+        }
+        .cal-Pecho { background: #f43f5e; box-shadow: 0 0 10px rgba(244,63,94,0.3); }
+        .cal-Espalda { background: #0ea5e9; box-shadow: 0 0 10px rgba(14,165,233,0.3); }
+        .cal-Pierna { background: #84cc16; box-shadow: 0 0 10px rgba(132,204,22,0.3); }
+        .cal-Hombro { background: #f97316; box-shadow: 0 0 10px rgba(249,115,22,0.3); }
+        .cal-Brazos { background: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.3); }
+        .cal-Abdomen { background: #2dd4bf; box-shadow: 0 0 10px rgba(45,212,191,0.3); }
         
-        ::-webkit-scrollbar { width: 0px; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="min-h-screen pb-24">
 
-    <header class="p-6 pt-12 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-xl z-40 border-b border-white/5">
-        <div class="max-w-xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-pine flex items-center justify-center border border-mint/20 shadow-lg">
-                        <svg class="w-6 h-6 text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M10 7v10M14 7v10" stroke-width="2.5" stroke-linecap="round"/></svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-black tracking-tighter uppercase leading-none">Gym<span class="text-mint">Track</span></h1>
-                        <p id="user-rank" class="text-[10px] font-bold text-mint/60 uppercase tracking-widest mt-1 italic">Cargando progreso...</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center gap-2">
-                        <span class="text-gold animate-pulse">★</span>
-                        <span id="total-xp-header" class="text-sm font-black text-white">0</span>
-                    </div>
+    <!-- Header -->
+    <header class="p-6 pt-10 sticky top-0 bg-[#060606]/90 backdrop-blur-xl z-40 border-b border-white/5">
+        <div class="max-w-xl mx-auto flex justify-between items-start mb-6">
+            <div>
+                <h1 class="text-2xl font-black uppercase italic tracking-tighter">Gym<span class="text-mint text-shadow-glow">Elite</span></h1>
+                <div class="flex gap-2 mt-2">
+                    <select id="month-select" onchange="handleDateChange()" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold uppercase outline-none cursor-pointer">
+                        <option value="0">Enero</option><option value="1">Febrero</option><option value="2">Marzo</option>
+                        <option value="3">Abril</option><option value="4">Mayo</option><option value="5">Junio</option>
+                        <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
+                        <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+                    </select>
+                    <select id="year-select" onchange="handleDateChange()" class="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold uppercase outline-none cursor-pointer"></select>
                 </div>
             </div>
-
-            <nav class="flex gap-2 overflow-x-auto pb-1">
-                <button onclick="switchTab('workout')" id="tab-workout" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest tab-active uppercase">Entrenar</button>
-                <button onclick="switchTab('metrics')" id="tab-metrics" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Métricas</button>
-                <button onclick="switchTab('achievements')" id="tab-achievements" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Logros</button>
-                <button onclick="switchTab('history')" id="tab-history" class="flex-none px-4 pb-3 text-[11px] font-black tracking-widest text-white/30 uppercase">Historial</button>
-            </nav>
+            <div id="total-xp" class="px-4 py-2 rounded-xl bg-mint/10 border border-mint/20 text-[10px] font-black text-mint uppercase tracking-widest shadow-[0_0_15px_rgba(45,212,191,0.1)]">0 XP</div>
         </div>
+
+        <nav class="max-w-xl mx-auto flex justify-between gap-4">
+            <button onclick="switchTab('workout')" id="tab-workout" class="pb-2 text-[10px] font-black uppercase tracking-widest tab-active">Entrenar</button>
+            <button onclick="switchTab('metrics')" id="tab-metrics" class="pb-2 text-[10px] font-black uppercase tracking-widest text-white/30">Métricas</button>
+            <button onclick="switchTab('history')" id="tab-history" class="pb-2 text-[10px] font-black uppercase tracking-widest text-white/30">Historial</button>
+            <button onclick="switchTab('achievements')" id="tab-achievements" class="pb-2 text-[10px] font-black uppercase tracking-widest text-white/30">Logros</button>
+        </nav>
     </header>
 
-    <div class="max-w-xl mx-auto p-6">
+    <main class="max-w-xl mx-auto p-6">
         
-        <!-- Tab: Workout -->
+        <!-- Tab: Entrenar -->
         <section id="content-workout" class="space-y-6">
-            <div class="glass-card p-6 rounded-[2.5rem] flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div id="timer-dot" class="w-2.5 h-2.5 rounded-full bg-white/20"></div>
-                    <span id="timer-display" class="text-3xl font-mono font-bold tracking-tighter">00:00</span>
-                </div>
-                <button id="btn-timer" onclick="toggleTimer()" class="px-6 py-3 rounded-2xl bg-mint text-pine font-black text-xs uppercase shadow-lg shadow-mint/20">Iniciar</button>
+            <div id="muscle-card" class="glass-card p-6 rounded-[2rem]">
+                <h3 class="text-[10px] font-black uppercase mb-4 text-white/40 tracking-widest text-center">Selecciona Músculo</h3>
+                <div id="muscle-selector" class="grid grid-cols-3 gap-2"></div>
             </div>
 
-            <div id="active-exercises" class="space-y-4"></div>
-
-            <button onclick="openModal()" class="w-full py-6 rounded-[2.5rem] accent-button text-mint font-black text-sm uppercase tracking-widest transition-transform active:scale-95">
-                + Añadir Ejercicio
-            </button>
-
-            <button id="btn-finish" onclick="finishWorkout()" class="hidden w-full py-6 rounded-[2.5rem] border-2 border-mint text-mint font-black text-sm uppercase tracking-widest">
-                Finalizar Sesión (lb)
-            </button>
-        </section>
-
-        <!-- Tab: Metrics -->
-        <section id="content-metrics" class="hidden space-y-6">
-            <div class="flex items-center justify-between glass-card p-3 rounded-3xl">
-                <button onclick="changeMonth(-1)" class="p-2 text-mint">◀</button>
-                <h3 id="calendar-month-year" class="text-[10px] font-black uppercase tracking-widest">Mes</h3>
-                <button onclick="changeMonth(1)" class="p-2 text-mint">▶</button>
-            </div>
-
-            <div class="glass-card p-6 rounded-[2.5rem]">
-                <div class="grid grid-cols-7 mb-2">
-                    <div class="calendar-header-day">Lun</div>
-                    <div class="calendar-header-day">Mar</div>
-                    <div class="calendar-header-day">Mié</div>
-                    <div class="calendar-header-day">Jue</div>
-                    <div class="calendar-header-day">Vie</div>
-                    <div class="calendar-header-day">Sáb</div>
-                    <div class="calendar-header-day">Dom</div>
-                </div>
-                <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
-            </div>
-
-            <div id="day-details" class="hidden space-y-4">
-                <div class="flex items-center justify-between px-2">
-                    <h4 class="text-[10px] font-black uppercase tracking-widest text-white/40">Sesiones del <span id="view-day-label" class="text-mint">día</span></h4>
-                    <button onclick="openManualModal()" class="text-[10px] font-black uppercase text-mint bg-mint/10 px-3 py-1 rounded-full">+ Registro Manual</button>
-                </div>
-                <div id="day-workouts-list" class="space-y-2"></div>
-            </div>
-
-            <!-- Gráfica de Volumen (Radar) -->
-            <div class="glass-card p-8 rounded-[3rem]">
-                <h4 class="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6 text-center italic">Volumen por Músculo (lb)</h4>
-                <div class="relative h-[250px]">
-                    <canvas id="muscleChart"></canvas>
-                </div>
-            </div>
-
-            <!-- NUEVA: Gráfica de Frecuencia (Barras) -->
-            <div class="glass-card p-8 rounded-[3rem]">
-                <h4 class="text-[10px] font-black uppercase tracking-widest text-white/30 mb-6 text-center italic">Frecuencia de Entrenamiento (Veces)</h4>
-                <div class="relative h-[200px]">
-                    <canvas id="frequencyChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tab: Achievements -->
-        <section id="content-achievements" class="hidden space-y-6 pb-10">
-            <div class="flex flex-col items-center justify-center py-4 text-center">
-                <div id="achievements-month-label" class="text-[10px] font-black uppercase text-mint/40 tracking-widest mb-1 italic">PROGRESO MENSUAL</div>
-                <div id="achievements-count" class="text-xs font-black uppercase text-mint tracking-[0.2em] mb-3 italic">0 / 20 LOGROS DESBLOQUEADOS</div>
-                <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div id="achievements-progress-bar" class="h-full bg-mint transition-all duration-700" style="width: 0%"></div>
-                </div>
-            </div>
-            <div id="achievements-list" class="grid grid-cols-1 gap-4"></div>
-        </section>
-
-        <!-- Tab: History -->
-        <section id="content-history" class="hidden space-y-4">
-            <div id="history-list" class="space-y-4"></div>
-        </section>
-
-    </div>
-
-    <!-- Modals -->
-    <div id="modal-manual" class="fixed inset-0 z-[100] bg-black/95 hidden flex items-center justify-center p-6">
-        <div class="glass-card w-full max-w-sm p-8 rounded-[3rem] border-white/10">
-            <h3 class="text-xl font-black uppercase italic mb-2">Registrar <span class="text-mint text-sm" id="manual-date-label">Día</span></h3>
-            <div class="space-y-4 mt-6">
-                <div>
-                    <label class="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Grupo Muscular</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="selectMuscleManual('Pecho')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Pecho</button>
-                        <button onclick="selectMuscleManual('Espalda')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Espalda</button>
-                        <button onclick="selectMuscleManual('Piernas')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Piernas</button>
-                        <button onclick="selectMuscleManual('Hombros')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Hombros</button>
-                        <button onclick="selectMuscleManual('Brazos')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Brazos</button>
-                        <button onclick="selectMuscleManual('Core')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Core</button>
-                        <button onclick="selectMuscleManual('Abdomen')" class="muscle-opt py-3 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase">Abdomen</button>
+            <div id="workout-area" class="hidden space-y-6">
+                <!-- Seccion de Rutinas Guardadas -->
+                <div id="saved-routines-section" class="space-y-3 hidden">
+                    <h3 class="text-[9px] font-black uppercase text-white/30 tracking-[0.2em] ml-2">Rutinas Guardadas</h3>
+                    <div id="saved-routines-list" class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                        <!-- Chips de ejercicios guardados se insertan aquí -->
                     </div>
                 </div>
-                <div>
-                    <label class="text-[9px] font-black uppercase text-white/40 mb-2 block tracking-widest">Peso Total (lb)</label>
-                    <input type="number" id="manual-weight-input" placeholder="Ej: 5000" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-mint text-white font-bold">
-                </div>
-            </div>
-            <div class="flex gap-3 mt-8">
-                <button onclick="closeManualModal()" class="flex-1 py-3 text-xs font-bold text-white/30 uppercase">Cerrar</button>
-                <button onclick="confirmManualEntry()" class="flex-1 py-3 bg-mint rounded-2xl text-pine font-black text-xs uppercase">Guardar</button>
-            </div>
-        </div>
-    </div>
 
-    <div id="modal" class="fixed inset-0 z-[100] bg-black/95 hidden flex items-center justify-center p-6">
-        <div class="glass-card w-full max-w-sm p-8 rounded-[3rem] border-white/10">
-            <h3 class="text-xl font-black uppercase italic mb-6">Nuevo <span class="text-mint">Reto</span></h3>
-            <div class="space-y-4">
-                <input type="text" id="input-ex-name" placeholder="Nombre del Ejercicio" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-mint text-white font-bold">
-                <select id="input-ex-type" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none text-white/60 font-bold">
-                    <option value="Pecho">Pecho</option>
-                    <option value="Espalda">Espalda</option>
-                    <option value="Piernas">Piernas</option>
-                    <option value="Hombros">Hombros</option>
-                    <option value="Brazos">Brazos</option>
-                    <option value="Core">Core</option>
-                    <option value="Abdomen">Abdomen</option>
-                </select>
-                <div class="flex gap-3 pt-4">
-                    <button onclick="closeModal()" class="flex-1 py-3 text-xs font-bold text-white/30 uppercase">Cancelar</button>
-                    <button onclick="handleAddExercise()" class="flex-1 py-3 bg-mint rounded-2xl text-pine font-black text-xs uppercase">Añadir</button>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-4 rounded-2xl text-center border-white/5">
+                        <span class="text-[8px] font-black text-white/30 uppercase block mb-1">Duración Sesión</span>
+                        <span id="session-timer" class="text-xl font-mono font-bold">00:00:00</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-2xl text-center border-mint/10">
+                        <span class="text-[8px] font-black text-mint/40 uppercase block mb-1">Bajo Tensión</span>
+                        <span id="productive-timer" class="text-xl font-mono font-bold text-mint">00:00:00</span>
+                    </div>
                 </div>
+
+                <button onclick="openModal()" class="w-full p-5 rounded-3xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors">+ Añadir Ejercicio</button>
+
+                <div id="exercise-list" class="space-y-3"></div>
+
+                <button id="btn-finish" class="w-full py-5 rounded-[2rem] bg-mint text-pine font-black text-sm uppercase opacity-50 cursor-not-allowed shadow-[0_10px_30px_rgba(45,212,191,0.2)]" disabled onclick="finishWorkout()">Finalizar Sesión</button>
             </div>
-        </div>
+        </section>
+
+        <!-- Tab: Métricas -->
+        <section id="content-metrics" class="hidden space-y-6">
+            <div class="glass-card p-6 rounded-[2rem]">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black uppercase text-[10px] tracking-widest text-mint">Mapa de Consistencia</h3>
+                    <div class="flex gap-1">
+                        <div class="w-2 h-2 rounded-sm bg-white/5"></div>
+                        <div class="w-2 h-2 rounded-sm bg-mint/40"></div>
+                        <div class="w-2 h-2 rounded-sm bg-mint"></div>
+                    </div>
+                </div>
+                <div id="calendar-container" class="grid grid-cols-7 gap-2"></div>
+            </div>
+            
+            <div class="glass-card p-6 rounded-[2rem]">
+                <h3 class="font-black uppercase text-[10px] tracking-widest text-white/60 mb-6 text-center">Distribución de Volumen (lb)</h3>
+                <canvas id="volumeChart" class="max-h-64"></canvas>
+            </div>
+
+            <div class="glass-card p-6 rounded-[2rem]">
+                <h3 class="font-black uppercase text-[10px] tracking-widest text-white/60 mb-6 text-center">Frecuencia por Músculo</h3>
+                <div id="weekly-frequency" class="space-y-5"></div>
+            </div>
+        </section>
+
+        <!-- Tab: Historial -->
+        <section id="content-history" class="hidden space-y-4">
+            <div id="history-container" class="space-y-4"></div>
+        </section>
+
+        <!-- Tab: Logros -->
+        <section id="content-achievements" class="hidden space-y-6">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-xl font-black uppercase italic">Galería de Trofeos</h2>
+                <span id="ach-count" class="text-[10px] font-bold text-mint">0/30</span>
+            </div>
+            <div id="achievements-container" class="grid grid-cols-2 gap-4"></div>
+        </section>
+
+    </main>
+
+    <!-- Modal Form -->
+    <div id="modal" class="fixed inset-0 z-50 bg-black/95 hidden flex items-center justify-center p-6 backdrop-blur-2xl">
+        <form id="exercise-form" onsubmit="event.preventDefault(); addExercise();" class="glass-card w-full max-w-sm p-8 rounded-[3rem] border-white/20">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-black uppercase italic tracking-tighter">Nuevo Ejercicio</h3>
+                <button type="button" onclick="closeModal()" class="text-white/20 hover:text-white font-bold">✕</button>
+            </div>
+            <div class="space-y-5">
+                <div class="space-y-1">
+                    <label class="text-[8px] font-black uppercase text-white/30 ml-2">Nombre del ejercicio</label>
+                    <input type="text" id="ex-name" required placeholder="Ej: Press Militar" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:border-mint/50 transition-colors">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[8px] font-black uppercase text-white/30 ml-2">Peso actual (lb)</label>
+                    <input type="number" id="ex-weight" step="0.5" required placeholder="0.0" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:border-mint/50 transition-colors">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black uppercase text-white/30 ml-2">Series (1-10)</label>
+                        <input type="number" id="ex-sets" required min="1" max="10" placeholder="4" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:border-mint/50 transition-colors">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[8px] font-black uppercase text-white/30 ml-2">Reps (1-30)</label>
+                        <input type="number" id="ex-reps" required min="1" max="30" placeholder="12" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:border-mint/50 transition-colors">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-5 bg-mint rounded-2xl text-pine font-black text-xs uppercase shadow-[0_10px_20px_rgba(45,212,191,0.2)] mt-4">Añadir al Plan</button>
+            </div>
+        </form>
     </div>
 
     <script>
-        const ACHIEVEMENTS_DEF = [
-            { id: 'first_step', title: 'Primer Paso', desc: 'Completa 1 entrenamiento este mes', target: 1, type: 'workouts', color: 'mint', icon: '🔥' },
-            { id: 'consistency_3', title: 'Tridente', desc: 'Completa 3 entrenamientos este mes', target: 3, type: 'workouts', color: 'emerald', icon: '🔱' },
-            { id: 'gym_rat', title: 'Rata de Gimnasio', desc: 'Completa 10 entrenamientos este mes', target: 10, type: 'workouts', color: 'ruby', icon: '🐀' },
-            { id: 'warrior', title: 'Guerrero Eterno', desc: 'Completa 25 entrenamientos este mes', target: 25, type: 'workouts', color: 'diamond', icon: '⚔️' },
-            { id: 'vol_2k', title: 'Tonelada Corta', desc: '2,000lb en una sesión este mes', target: 2000, type: 'volume_single', color: 'gold', icon: '⚖️' },
-            { id: 'vol_5k', title: 'Fuerza Bruta', desc: '5,000lb en una sesión este mes', target: 5000, type: 'volume_single', color: 'ruby', icon: '🔨' },
-            { id: 'vol_10k', title: 'Leyenda de Hierro', desc: '10,000lb en una sesión este mes', target: 10000, type: 'volume_single', color: 'diamond', icon: '👑' },
-            { id: 'total_50k', title: 'Titán del Mes', desc: '50,000lb acumuladas este mes', target: 50000, type: 'total_volume', color: 'mint', icon: '⛰️' },
-            { id: 'total_100k', title: 'Montaña Mensual', desc: '100,000lb acumuladas este mes', target: 100000, type: 'total_volume', color: 'gold', icon: '🏔️' },
-            { id: 'chest_king', title: 'Pecho de Acero', desc: '5 sesiones de Pecho este mes', target: 5, type: 'muscle_Pecho', color: 'mint', icon: '🛡️' },
-            { id: 'back_beast', title: 'Espalda de Titán', desc: '5 sesiones de Espalda este mes', target: 5, type: 'muscle_Espalda', color: 'emerald', icon: '🦅' },
-            { id: 'leg_day_master', title: 'Pilar Inamovible', desc: '5 sesiones de Piernas este mes', target: 5, type: 'muscle_Piernas', color: 'ruby', icon: '🦵' },
-            { id: 'shoulder_boulder', title: 'Hombros de Piedra', desc: '5 sesiones de Hombros este mes', target: 5, type: 'muscle_Hombros', color: 'gold', icon: '🗿' },
-            { id: 'abs_warrior', title: 'Núcleo de Poder', desc: '5 sesiones de Abdomen este mes', target: 5, type: 'muscle_Abdomen', color: 'diamond', icon: '💎' },
-            { id: 'lvl_5', title: 'Prestigio I', desc: 'Gana 2,000 XP este mes', target: 2000, type: 'total_xp', color: 'mint', icon: '⭐' },
-            { id: 'lvl_10', title: 'Prestigio II', desc: 'Gana 5,000 XP este mes', target: 5000, type: 'total_xp', color: 'gold', icon: '🌟' },
-            { id: 'sets_100', title: 'Máquina de Repes', desc: '100 series este mes', target: 100, type: 'total_sets', color: 'emerald', icon: '⚡' },
-            { id: 'time_marathon', title: 'Sesión Épica', desc: 'Sesión de 60 min este mes', target: 3600, type: 'duration_single', color: 'ruby', icon: '⏱️' },
-            { id: 'early_bird', title: 'Madrugador', desc: 'Entrena antes de las 9 AM este mes', target: 1, type: 'early_train', color: 'gold', icon: '☀️' },
-            { id: 'night_owl', title: 'Búho Nocturno', desc: 'Entrena después de las 10 PM este mes', target: 1, type: 'late_train', color: 'diamond', icon: '🌙' }
+        const MUSCLES = ['Pecho', 'Espalda', 'Pierna', 'Hombro', 'Brazos', 'Abdomen'];
+        
+        const ACHIEVEMENTS = [
+            { id: 1, title: 'Primer Paso', desc: '1 entrenamiento', goal: 1, type: 'count', icon: '🚀', color: 'from-mint to-sky' },
+            { id: 2, title: 'Novato Pro', desc: '5 entrenamientos', goal: 5, type: 'count', icon: '🔰', color: 'from-lime to-mint' },
+            { id: 3, title: 'Habituado', desc: '10 entrenamientos', goal: 10, type: 'count', icon: '📅', color: 'from-sky to-violet' },
+            { id: 4, title: 'Atleta', desc: '25 entrenamientos', goal: 25, type: 'count', icon: '🏃', color: 'from-orange-400 to-red-500' },
+            { id: 5, title: 'Leyenda Local', desc: '50 entrenamientos', goal: 50, type: 'count', icon: '🏆', color: 'from-yellow-400 to-orange-600' },
+            { id: 6, title: 'Dios del Gym', desc: '100 entrenamientos', goal: 100, type: 'count', icon: '⚡', color: 'from-purple-500 to-pink-500' },
+            { id: 7, title: 'Fuerza Inicial', desc: '1,000lb movidas', goal: 1000, type: 'volume', icon: '⚖️', color: 'from-slate-400 to-slate-600' },
+            { id: 8, title: 'Tonelada', desc: '2,000lb movidas', goal: 2000, type: 'volume', icon: '📦', color: 'from-blue-400 to-indigo-600' },
+            { id: 9, title: 'Levantador', desc: '5,000lb movidas', goal: 5000, type: 'volume', icon: '🏗️', color: 'from-emerald-400 to-teal-600' },
+            { id: 10, title: 'Hércules', desc: '10,000lb movidas', goal: 10000, type: 'volume', icon: '💪', color: 'from-amber-400 to-yellow-600' },
+            { id: 11, title: 'Titan', desc: '25,000lb movidas', goal: 25000, type: 'volume', icon: '🧱', color: 'from-red-500 to-rose-700' },
+            { id: 12, title: 'Coloso', desc: '50,000lb movidas', goal: 50000, type: 'volume', icon: '🌋', color: 'from-gray-700 to-black' },
+            { id: 13, title: 'Minutos Oro', desc: '1h de TBT', goal: 3600, type: 'activeTime', icon: '⏳', color: 'from-cyan-400 to-blue-500' },
+            { id: 14, title: 'Concentrado', desc: '5h de TBT', goal: 18000, type: 'activeTime', icon: '🎯', color: 'from-indigo-400 to-purple-600' },
+            { id: 15, title: 'Maestro Tiempo', desc: '10h de TBT', goal: 36000, type: 'activeTime', icon: '🌀', color: 'from-fuchsia-500 to-purple-800' },
+            { id: 16, title: 'Semana Perfecta', desc: '4 sesiones en un mes', goal: 4, type: 'monthly', icon: '✨', color: 'from-mint to-emerald-600' },
+            { id: 17, title: 'Consistente', desc: '8 sesiones en un mes', goal: 8, type: 'monthly', icon: '🔗', color: 'from-sky to-blue-700' },
+            { id: 18, title: 'Imparable', desc: '12 sesiones en un mes', goal: 12, type: 'monthly', icon: '🔥', color: 'from-orange-500 to-red-600' },
+            { id: 19, title: 'Pecho Acero', desc: '10 sesiones Pecho', goal: 10, type: 'muscle_Pecho', icon: '🛡️', color: 'from-red-400 to-red-600' },
+            { id: 20, title: 'Espalda Ancha', desc: '10 sesiones Espalda', goal: 10, type: 'muscle_Espalda', icon: '🦅', color: 'from-blue-400 to-blue-600' },
+            { id: 21, title: 'Pilar Fuerte', desc: '10 sesiones Pierna', goal: 10, type: 'muscle_Pierna', icon: '🏛️', color: 'from-green-400 to-green-600' },
+            { id: 22, title: 'Hombro Bala', desc: '10 sesiones Hombro', goal: 10, type: 'muscle_Hombro', icon: '💣', color: 'from-orange-400 to-orange-600' },
+            { id: 23, title: 'Brazo Power', desc: '10 sesiones Brazos', goal: 10, type: 'muscle_Brazos', icon: '🦾', color: 'from-purple-400 to-purple-600' },
+            { id: 24, title: 'Core King', desc: '10 sesiones Abdomen', goal: 10, type: 'muscle_Abdomen', icon: '💎', color: 'from-teal-400 to-teal-600' },
+            { id: 25, title: 'Sesión Épica', desc: '2,000lb en una sesión', goal: 2000, type: 'single_volume', icon: '🌟', color: 'from-yellow-300 to-yellow-500' },
+            { id: 26, title: 'Sesión Elite', desc: '5,000lb en una sesión', goal: 5000, type: 'single_volume', icon: '👑', color: 'from-amber-400 to-orange-500' },
+            { id: 27, title: 'Maratonista', desc: 'Sesión de 90 min', goal: 5400, type: 'single_time', icon: '🕙', color: 'from-slate-500 to-slate-800' },
+            { id: 28, title: 'Dedicado', desc: '5 ejercicios en una sesión', goal: 5, type: 'single_ex_count', icon: '📝', color: 'from-sky-300 to-sky-500' },
+            { id: 29, title: 'Multifacético', desc: 'Entrena todos los músculos', goal: 6, type: 'all_muscles', icon: '🌈', color: 'from-pink-400 to-violet-500' },
+            { id: 30, title: 'Inmortal', desc: '500,000lb totales', goal: 500000, type: 'volume', icon: '🌌', color: 'from-indigo-900 to-black' }
         ];
 
-        let state = JSON.parse(localStorage.getItem('gt_v12_state')) || {
-            workouts: [],
-            activeExercises: [],
-            xp: 0,
-            level: 1
+        let state = {
+            workouts: JSON.parse(localStorage.getItem('gym_pro_data_v2')) || [],
+            routines: JSON.parse(localStorage.getItem('gym_pro_routines_v2')) || {}, // Memoria de ejercicios por músculo
+            current: { muscle: null, exercises: [], sessionSeconds: 0, productiveSeconds: 0, isStarted: false },
+            xp: parseInt(localStorage.getItem('gym_pro_xp_v2')) || 0,
+            viewMonth: new Date().getMonth(),
+            viewYear: new Date().getFullYear(),
+            activeTab: 'workout'
         };
 
-        let viewDate = new Date();
-        let timer = { interval: null, seconds: 0, running: false };
-        let volChart = null;
-        let freqChart = null;
-        let selectedManualDate = null;
-        let selectedManualMuscle = null;
+        let sessionInt, exInt, myChart;
 
-        function save() { localStorage.setItem('gt_v12_state', JSON.stringify(state)); }
+        function save() {
+            localStorage.setItem('gym_pro_data_v2', JSON.stringify(state.workouts));
+            localStorage.setItem('gym_pro_routines_v2', JSON.stringify(state.routines));
+            localStorage.setItem('gym_pro_xp_v2', state.xp);
+            document.getElementById('total-xp').innerText = `${state.xp.toLocaleString()} XP`;
+        }
 
-        function switchTab(tabId) {
+        function formatTime(s) {
+            const h = Math.floor(s/3600).toString().padStart(2,'0');
+            const m = Math.floor((s%3600)/60).toString().padStart(2,'0');
+            const sec = (s%60).toString().padStart(2,'0');
+            return `${h}:${m}:${sec}`;
+        }
+
+        function handleDateChange() {
+            state.viewMonth = parseInt(document.getElementById('month-select').value);
+            state.viewYear = parseInt(document.getElementById('year-select').value);
+            refreshUI();
+        }
+
+        function switchTab(id) {
+            state.activeTab = id;
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('tab-active', 'text-white/30');
-                b.classList.add(b.id === `tab-${tabId}` ? 'tab-active' : 'text-white/30');
-            });
-            document.getElementById(`content-${tabId}`).classList.remove('hidden');
-            if(tabId === 'metrics') renderMetrics();
-            if(tabId === 'history') renderHistory();
-            if(tabId === 'achievements') renderAchievements();
+            document.getElementById(`content-${id}`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.replace('tab-active', 'text-white/30'));
+            document.getElementById(`tab-${id}`).classList.replace('text-white/30', 'tab-active');
+            refreshUI();
         }
 
-        // --- CALENDARIO ---
-        const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-grid');
-            const label = document.getElementById('calendar-month-year');
-            grid.innerHTML = '';
-            label.innerText = `${MONTHS_ES[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
-            const firstDayIndex = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
-            const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
-            let offset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
-            for(let i = 0; i < offset; i++) grid.innerHTML += `<div></div>`;
-            for(let d = 1; d <= daysInMonth; d++) {
-                const currentDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), d);
-                const dStr = currentDate.toISOString().split('T')[0];
-                const ws = state.workouts.filter(w => w.date.startsWith(dStr));
-                const el = document.createElement('div');
-                el.className = `calendar-day ${ws.length > 0 ? 'has-workout' : 'text-white/20'} ${selectedManualDate === dStr ? 'selected' : ''}`;
-                el.innerText = d;
-                el.onclick = () => selectDay(dStr);
-                grid.appendChild(el);
+        function selectMuscle(m) {
+            state.current.muscle = m;
+            document.querySelectorAll('#muscle-selector button').forEach(b => b.classList.remove('muscle-btn-active'));
+            document.getElementById(`btn-${m}`).classList.add('muscle-btn-active');
+            document.getElementById('workout-area').classList.remove('hidden');
+            renderSavedRoutines();
+        }
+
+        function renderSavedRoutines() {
+            const section = document.getElementById('saved-routines-section');
+            const container = document.getElementById('saved-routines-list');
+            const saved = state.routines[state.current.muscle] || [];
+
+            if(saved.length > 0) {
+                section.classList.remove('hidden');
+                container.innerHTML = saved.map(ex => `
+                    <button onclick="loadRoutineExercise('${ex.name}', ${ex.sets}, ${ex.reps})" 
+                        class="flex-shrink-0 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-left min-w-[120px] active:scale-95 transition-transform">
+                        <div class="text-[9px] font-black uppercase text-mint truncate w-full mb-1">${ex.name}</div>
+                        <div class="text-[7px] font-bold text-white/30 uppercase tracking-widest">${ex.sets} Series · ${ex.reps} Reps</div>
+                    </button>
+                `).join('');
+            } else {
+                section.classList.add('hidden');
             }
         }
 
-        function selectDay(dateStr) {
-            selectedManualDate = dateStr;
-            document.getElementById('view-day-label').innerText = dateStr;
-            document.getElementById('day-details').classList.remove('hidden');
-            renderCalendar();
-            renderDayWorkouts();
-        }
-
-        function renderDayWorkouts() {
-            const list = document.getElementById('day-workouts-list');
-            const ws = state.workouts.filter(w => w.date.startsWith(selectedManualDate));
-            if(ws.length === 0) { list.innerHTML = '<div class="p-8 text-[10px] text-white/10 uppercase font-black text-center italic border-2 border-dashed border-white/5 rounded-[2rem]">Sin registros</div>'; return; }
-            list.innerHTML = ws.map(w => `
-                <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] font-black uppercase text-mint italic tracking-widest">${Object.keys(w.muscles).join(', ')}</p>
-                        <p class="text-sm font-bold text-white mt-1">${w.vol.toLocaleString()} lb</p>
-                    </div>
-                    <button onclick="deleteWorkout(${w.id})" class="w-10 h-10 rounded-xl bg-ruby/10 flex items-center justify-center text-ruby">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteWorkout(id) {
-            state.workouts = state.workouts.filter(w => w.id !== id);
-            save(); renderMetrics(); updateHeader();
-        }
-
-        // --- REGISTRO MANUAL ---
-        function openManualModal() {
-            if(!selectedManualDate) selectedManualDate = new Date().toISOString().split('T')[0];
-            document.getElementById('manual-date-label').innerText = selectedManualDate;
-            document.getElementById('manual-weight-input').value = '';
-            selectedManualMuscle = null;
-            document.querySelectorAll('.muscle-opt').forEach(opt => {
-                opt.classList.remove('bg-mint', 'text-pine', 'border-mint');
-                opt.classList.add('bg-white/5', 'text-white', 'border-white/5');
-            });
-            document.getElementById('modal-manual').classList.remove('hidden');
-        }
-        function closeManualModal() { document.getElementById('modal-manual').classList.add('hidden'); }
-        function selectMuscleManual(muscle) {
-            selectedManualMuscle = muscle;
-            document.querySelectorAll('.muscle-opt').forEach(opt => {
-                const isActive = opt.innerText === muscle.toUpperCase();
-                opt.classList.toggle('bg-mint', isActive);
-                opt.classList.toggle('text-pine', isActive);
-                opt.classList.toggle('border-mint', isActive);
-                opt.classList.toggle('bg-white/5', !isActive);
-                opt.classList.toggle('text-white', !isActive);
-                opt.classList.toggle('border-white/5', !isActive);
-            });
-        }
-        function confirmManualEntry() {
-            const weight = parseFloat(document.getElementById('manual-weight-input').value);
-            if(!selectedManualDate || !selectedManualMuscle || !weight) return;
-            state.workouts.unshift({
-                id: Date.now(),
-                date: selectedManualDate + "T12:00:00.000Z",
-                muscles: { [selectedManualMuscle]: weight },
-                vol: weight,
-                setsCount: 3,
-                duration: 1800,
-                manual: true,
-                xpEarned: 100
-            });
-            state.xp += 100;
-            save(); renderMetrics(); updateHeader(); closeManualModal(); renderDayWorkouts();
-        }
-
-        // --- GRÁFICAS ---
-        function renderCharts() {
-            const labels = ['Pecho', 'Espalda', 'Piernas', 'Hombros', 'Brazos', 'Core', 'Abdomen'];
-            const monthly = state.workouts.filter(w => {
-                const d = new Date(w.date);
-                return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
-            });
-
-            const volData = labels.map(l => monthly.reduce((acc, w) => acc + (w.muscles[l] || 0), 0));
-            const freqData = labels.map(l => monthly.filter(w => w.muscles[l]).length);
-
-            const ctxV = document.getElementById('muscleChart').getContext('2d');
-            if(volChart) volChart.destroy();
-            volChart = new Chart(ctxV, {
-                type: 'radar',
-                data: {
-                    labels,
-                    datasets: [{
-                        data: volData,
-                        borderColor: '#2dd4bf',
-                        backgroundColor: 'rgba(45, 212, 191, 0.1)',
-                        pointBackgroundColor: '#2dd4bf'
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { r: { grid: { color: 'rgba(255,255,255,0.05)' }, angleLines: { color: 'rgba(255,255,255,0.05)' }, pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold' } }, ticks: { display: false } } },
-                    plugins: { legend: { display: false } }
-                }
-            });
-
-            const ctxF = document.getElementById('frequencyChart').getContext('2d');
-            if(freqChart) freqChart.destroy();
-            freqChart = new Chart(ctxF, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{
-                        data: freqData,
-                        backgroundColor: 'rgba(45, 212, 191, 0.4)',
-                        borderColor: '#2dd4bf',
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { 
-                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 8, weight: 'bold' } } },
-                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: 'rgba(255,255,255,0.2)', font: { size: 8 }, stepSize: 1 } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-
-        // --- WORKOUT LOGIC ---
-        function handleAddExercise() {
-            const name = document.getElementById('input-ex-name').value;
-            const type = document.getElementById('input-ex-type').value;
-            if(!name) return;
-            state.activeExercises.push({ id: Date.now(), name, type, sets: [{ id: Date.now()+1, weight: '', reps: '', done: false }] });
-            renderWorkout(); closeModal();
-            document.getElementById('input-ex-name').value = '';
-        }
-        function renderWorkout() {
-            const container = document.getElementById('active-exercises');
-            container.innerHTML = state.activeExercises.map(ex => `
-                <div class="glass-card rounded-[2.5rem] overflow-hidden">
-                    <div class="p-5 bg-white/5 flex justify-between items-center">
-                        <div>
-                            <h4 class="text-sm font-black uppercase italic">${ex.name}</h4>
-                            <span class="text-[8px] font-bold text-mint uppercase tracking-widest">${ex.type}</span>
-                        </div>
-                        <button onclick="removeEx(${ex.id})" class="text-white/20 hover:text-ruby">✕</button>
-                    </div>
-                    <div class="p-6 space-y-3">
-                        ${ex.sets.map((s, i) => `
-                            <div class="flex gap-2 items-center">
-                                <span class="w-6 text-[10px] font-black text-white/20">${i+1}</span>
-                                <input type="number" value="${s.weight}" placeholder="lb" onchange="updateSet(${ex.id}, ${s.id}, 'weight', this.value)" class="flex-1 bg-white/5 border border-white/5 rounded-xl p-3 text-center text-xs font-bold outline-none focus:border-mint">
-                                <input type="number" value="${s.reps}" placeholder="reps" onchange="updateSet(${ex.id}, ${s.id}, 'reps', this.value)" class="flex-1 bg-white/5 border border-white/5 rounded-xl p-3 text-center text-xs font-bold outline-none focus:border-mint">
-                                <button onclick="toggleSet(${ex.id}, ${s.id})" class="w-10 h-10 rounded-xl flex items-center justify-center ${s.done ? 'bg-mint text-pine' : 'bg-white/5 text-white/20'} transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round"/></svg>
-                                </button>
-                            </div>
-                        `).join('')}
-                        <button onclick="addSet(${ex.id})" class="w-full py-2 text-[8px] font-bold text-white/10 uppercase tracking-widest">+ Añadir Serie</button>
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('btn-finish').classList.toggle('hidden', state.activeExercises.length === 0);
-        }
-        function removeEx(id) { state.activeExercises = state.activeExercises.filter(e => e.id !== id); renderWorkout(); save(); }
-        function addSet(exId) { state.activeExercises.find(e => e.id === exId).sets.push({ id: Date.now(), weight: '', reps: '', done: false }); renderWorkout(); save(); }
-        function updateSet(exId, setId, key, val) { const ex = state.activeExercises.find(e => e.id === exId); const set = ex.sets.find(s => s.id === setId); set[key] = parseFloat(val); save(); }
-        function toggleSet(exId, setId) {
-            const ex = state.activeExercises.find(e => e.id === exId);
-            const set = ex.sets.find(s => s.id === setId);
-            set.done = !set.done;
-            if(set.done) state.xp += 25;
-            save(); renderWorkout(); updateHeader();
-        }
-        function finishWorkout() {
-            const completed = state.activeExercises.filter(ex => ex.sets.some(s => s.done));
-            if(completed.length === 0) return;
-            let musclesMap = {}; let vol = 0; let setsCount = 0;
-            completed.forEach(ex => {
-                let exVol = 0;
-                ex.sets.forEach(s => { if(s.done) { exVol += (s.weight * s.reps || 0); setsCount++; }});
-                musclesMap[ex.type] = (musclesMap[ex.type] || 0) + exVol;
-                vol += exVol;
-            });
-            state.workouts.unshift({ id: Date.now(), date: new Date().toISOString(), muscles: musclesMap, vol, setsCount, duration: timer.seconds, xpEarned: 150 });
-            state.activeExercises = [];
-            state.xp += 150;
-            resetTimer(); save(); switchTab('metrics'); updateHeader();
-        }
-
-        // --- UI & LOGROS MENSUALES ---
-        function renderAchievements() {
-            const container = document.getElementById('achievements-list');
-            const monthLabel = document.getElementById('achievements-month-label');
-            monthLabel.innerText = `RETO DE ${MONTHS_ES[viewDate.getMonth()].toUpperCase()} ${viewDate.getFullYear()}`;
-            
-            let unlockedCount = 0;
-            const html = ACHIEVEMENTS_DEF.map(ach => {
-                const prog = calculateMonthlyProgress(ach);
-                const isUnlocked = prog.current >= ach.target;
-                if(isUnlocked) unlockedCount++;
-                const percent = Math.min(100, (prog.current / ach.target) * 100);
-                const colorHex = { mint: '#2dd4bf', gold: '#fbbf24', ruby: '#ef4444', diamond: '#60a5fa', emerald: '#10b981' }[ach.color];
-                return `
-                    <div class="glass-card p-5 rounded-[2rem] achievement-card ${isUnlocked ? 'achievement-unlocked glow-'+ach.color : 'achievement-locked'}">
-                        <div class="flex items-center gap-4">
-                            <div class="text-3xl filter drop-shadow-lg">${ach.icon}</div>
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-black uppercase italic ${isUnlocked ? 'text-white' : 'text-white/40'} truncate">${ach.title}</h4>
-                                <p class="text-[9px] text-white/30 font-bold uppercase tracking-tight mt-0.5">${ach.desc}</p>
-                                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden mt-3"><div class="h-full" style="width: ${percent}%; background-color: ${colorHex}"></div></div>
-                                <div class="flex justify-between mt-2"><span class="text-[8px] font-black uppercase text-white/30">${Math.floor(prog.current).toLocaleString()} / ${ach.target.toLocaleString()}</span></div>
-                            </div>
-                        </div>
-                    </div>`;
-            }).join('');
-            container.innerHTML = html;
-            document.getElementById('achievements-count').innerText = `${unlockedCount} / ${ACHIEVEMENTS_DEF.length} LOGROS DESBLOQUEADOS`;
-            document.getElementById('achievements-progress-bar').style.width = `${(unlockedCount / ACHIEVEMENTS_DEF.length) * 100}%`;
-        }
-
-        function calculateMonthlyProgress(ach) {
-            const monthlyWorkouts = state.workouts.filter(w => {
-                const d = new Date(w.date);
-                return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
-            });
-
-            let current = 0;
-            switch(ach.type) {
-                case 'workouts': current = monthlyWorkouts.length; break;
-                case 'total_xp': current = monthlyWorkouts.reduce((acc, w) => acc + (w.xpEarned || 0), 0); break;
-                case 'total_volume': current = monthlyWorkouts.reduce((acc, w) => acc + w.vol, 0); break;
-                case 'total_sets': current = monthlyWorkouts.reduce((acc, w) => acc + w.setsCount, 0); break;
-                case 'volume_single': current = monthlyWorkouts.length ? Math.max(...monthlyWorkouts.map(w => w.vol)) : 0; break;
-                case 'duration_single': current = monthlyWorkouts.length ? Math.max(...monthlyWorkouts.map(w => w.duration)) : 0; break;
-                case 'early_train': current = monthlyWorkouts.some(w => new Date(w.date).getHours() < 9 && !w.manual) ? 1 : 0; break;
-                case 'late_train': current = monthlyWorkouts.some(w => new Date(w.date).getHours() >= 22 && !w.manual) ? 1 : 0; break;
-                default: if(ach.type.startsWith('muscle_')) current = monthlyWorkouts.filter(w => w.muscles[ach.type.replace('muscle_', '')]).length;
-            }
-            return { current };
-        }
-
-        function toggleTimer() {
-            if(timer.running) { clearInterval(timer.interval); document.getElementById('btn-timer').innerText = 'Reanudar'; }
-            else { timer.interval = setInterval(() => { timer.seconds++; updateTimerUI(); }, 1000); document.getElementById('btn-timer').innerText = 'Pausar'; document.getElementById('timer-dot').classList.add('bg-mint', 'animate-pulse'); }
-            timer.running = !timer.running;
-        }
-        function resetTimer() { clearInterval(timer.interval); timer.seconds = 0; timer.running = false; updateTimerUI(); document.getElementById('btn-timer').innerText = 'Iniciar'; }
-        function updateTimerUI() { const m = Math.floor(timer.seconds / 60); const s = timer.seconds % 60; document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }
-
-        function renderHistory() {
-            const container = document.getElementById('history-list');
-            if(state.workouts.length === 0) { container.innerHTML = '<div class="text-center py-20 text-white/20 text-xs italic font-black uppercase">Sin historial</div>'; return; }
-            container.innerHTML = state.workouts.map(w => `
-                <div class="glass-card p-6 rounded-[2rem]">
-                    <span class="text-[10px] font-black text-mint uppercase tracking-widest">${new Date(w.date).toLocaleDateString()}</span>
-                    <h4 class="text-xs font-black uppercase italic mt-1">${Object.keys(w.muscles).join(', ')}</h4>
-                    <p class="text-sm font-black mt-2">${w.vol.toLocaleString()} lb</p>
-                </div>`).join('');
-        }
-
-        function updateHeader() {
-            document.getElementById('total-xp-header').innerText = state.xp.toLocaleString();
-            state.level = Math.floor(state.xp / 1000) + 1;
-            document.getElementById('user-rank').innerText = `Nivel ${state.level} · Atleta de Hierro`;
+        function loadRoutineExercise(name, sets, reps) {
+            document.getElementById('ex-name').value = name;
+            document.getElementById('ex-sets').value = sets;
+            document.getElementById('ex-reps').value = reps;
+            document.getElementById('ex-weight').value = ""; // El único dato manual
+            openModal();
         }
 
         function openModal() { document.getElementById('modal').classList.remove('hidden'); }
         function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-        function renderMetrics() { renderCalendar(); renderCharts(); if(selectedManualDate) renderDayWorkouts(); }
-        function changeMonth(dir) { viewDate.setMonth(viewDate.getMonth() + dir); renderMetrics(); renderAchievements(); }
 
-        updateHeader();
-        renderWorkout();
+        function addExercise() {
+            const name = document.getElementById('ex-name').value;
+            const weight = parseFloat(document.getElementById('ex-weight').value);
+            const sets = Math.min(10, Math.max(1, parseInt(document.getElementById('ex-sets').value)));
+            const reps = Math.min(30, Math.max(1, parseInt(document.getElementById('ex-reps').value)));
+            
+            // Guardar en rutinas si no existe o ha cambiado
+            if(!state.routines[state.current.muscle]) state.routines[state.current.muscle] = [];
+            const existingIdx = state.routines[state.current.muscle].findIndex(e => e.name.toLowerCase() === name.toLowerCase());
+            
+            const routineData = { name, sets, reps };
+            if(existingIdx >= 0) {
+                state.routines[state.current.muscle][existingIdx] = routineData;
+            } else {
+                state.routines[state.current.muscle].push(routineData);
+            }
+            save();
+            renderSavedRoutines();
+
+            if(!state.current.isStarted) {
+                state.current.isStarted = true;
+                sessionInt = setInterval(() => {
+                    state.current.sessionSeconds++;
+                    document.getElementById('session-timer').innerText = formatTime(state.current.sessionSeconds);
+                }, 1000);
+            }
+
+            state.current.exercises.push({ 
+                name, weight, sets, reps, 
+                time: 0, isRunning: false, 
+                totalVolume: weight * sets * reps 
+            });
+
+            document.getElementById('btn-finish').disabled = false;
+            document.getElementById('btn-finish').classList.remove('opacity-50', 'cursor-not-allowed');
+            renderExercises();
+            closeModal();
+            document.getElementById('exercise-form').reset();
+        }
+
+        function removeExFromCurrent(idx) {
+            state.current.exercises.splice(idx, 1);
+            if(state.current.exercises.length === 0) {
+                document.getElementById('btn-finish').disabled = true;
+                document.getElementById('btn-finish').classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            renderExercises();
+        }
+
+        function toggleExTimer(idx) {
+            const ex = state.current.exercises[idx];
+            ex.isRunning = !ex.isRunning;
+            state.current.exercises.forEach((item, i) => { if(i !== idx) item.isRunning = false; });
+            clearInterval(exInt);
+            if(ex.isRunning) {
+                exInt = setInterval(() => {
+                    ex.time++;
+                    state.current.productiveSeconds++;
+                    document.getElementById(`ex-timer-${idx}`).innerText = formatTime(ex.time);
+                    document.getElementById('productive-timer').innerText = formatTime(state.current.productiveSeconds);
+                }, 1000);
+            }
+            renderExercises();
+        }
+
+        function renderExercises() {
+            const container = document.getElementById('exercise-list');
+            container.innerHTML = state.current.exercises.map((ex, idx) => `
+                <div class="glass-card p-4 rounded-2xl flex justify-between items-center ${ex.isRunning ? 'border-mint/40 bg-mint/5 shadow-[0_0_15px_rgba(45,212,191,0.05)]' : 'border-white/5'}">
+                    <div class="flex items-center gap-3">
+                        <button onclick="removeExFromCurrent(${idx})" class="w-8 h-8 rounded-xl bg-ruby/10 text-ruby text-xs font-black flex items-center justify-center hover:bg-ruby/20 transition-colors">✕</button>
+                        <div>
+                            <h4 class="text-[10px] font-black uppercase tracking-tight">${ex.name}</h4>
+                            <span class="text-[8px] text-white/40 uppercase font-bold">${ex.weight}lb | ${ex.sets}x${ex.reps}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div id="ex-timer-${idx}" class="text-[10px] font-mono font-bold mb-1 text-white/60">${formatTime(ex.time)}</div>
+                        <button onclick="toggleExTimer(${idx})" class="px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest ${ex.isRunning ? 'bg-ruby text-white' : 'bg-mint text-pine'} transition-all">
+                            ${ex.isRunning ? 'Parar' : 'Activo'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function finishWorkout() {
+            const workout = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                muscle: state.current.muscle,
+                totalTime: state.current.sessionSeconds,
+                activeTime: state.current.productiveSeconds,
+                totalVolume: state.current.exercises.reduce((acc, ex) => acc + ex.totalVolume, 0),
+                exercises: [...state.current.exercises]
+            };
+            state.workouts.push(workout);
+            state.xp += Math.floor(workout.totalVolume / 10) + Math.floor(workout.activeTime / 60);
+            save();
+            
+            clearInterval(sessionInt); 
+            clearInterval(exInt);
+            state.current = { muscle: null, exercises: [], sessionSeconds: 0, productiveSeconds: 0, isStarted: false };
+            
+            document.getElementById('workout-area').classList.add('hidden');
+            document.getElementById('session-timer').innerText = "00:00:00";
+            document.getElementById('productive-timer').innerText = "00:00:00";
+            document.querySelectorAll('#muscle-selector button').forEach(b => b.classList.remove('muscle-btn-active'));
+            document.getElementById('btn-finish').disabled = true;
+            document.getElementById('btn-finish').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('exercise-list').innerHTML = '';
+            
+            switchTab('history');
+        }
+
+        function deleteWorkout(id) {
+            state.workouts = state.workouts.filter(w => w.id !== id);
+            save();
+            refreshUI();
+        }
+
+        function renderHistory() {
+            const filtered = state.workouts.filter(w => {
+                const d = new Date(w.date);
+                return d.getMonth() === state.viewMonth && d.getFullYear() === state.viewYear;
+            });
+            const container = document.getElementById('history-container');
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 opacity-20 font-black uppercase text-[10px] tracking-[0.3em]">No hay registros este mes</div>`;
+                return;
+            }
+            container.innerHTML = filtered.slice().reverse().map(w => `
+                <div class="glass-card p-6 rounded-[2.5rem]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-[8px] font-black text-white/30 uppercase tracking-widest">${new Date(w.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}</span>
+                            <h3 class="text-2xl font-black italic uppercase tracking-tighter text-shadow-glow">${w.muscle}</h3>
+                        </div>
+                        <button onclick="deleteWorkout(${w.id})" class="px-3 py-1.5 rounded-xl bg-ruby/10 text-ruby text-[8px] font-black uppercase border border-ruby/10">Eliminar</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 mb-6">
+                        <div class="text-center bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <span class="text-[7px] block text-white/20 uppercase font-black mb-1">Volumen</span>
+                            <span class="text-xs font-bold">${w.totalVolume.toLocaleString()}lb</span>
+                        </div>
+                         <div class="text-center bg-white/5 p-3 rounded-2xl border border-white/5">
+                            <span class="text-[7px] block text-white/20 uppercase font-black mb-1">Tiempo</span>
+                            <span class="text-xs font-bold">${formatTime(w.totalTime)}</span>
+                        </div>
+                         <div class="text-center bg-white/5 p-3 rounded-2xl border border-mint/10">
+                            <span class="text-[7px] block text-mint/30 uppercase font-black mb-1 text-shadow-glow">TBT</span>
+                            <span class="text-xs font-bold text-mint">${formatTime(w.activeTime)}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2 max-h-32 overflow-y-auto pr-2 no-scrollbar">
+                        ${w.exercises.map(ex => `
+                            <div class="flex justify-between text-[9px] font-bold border-b border-white/5 pb-2">
+                                <span class="uppercase text-white/60">${ex.name}</span>
+                                <span>${ex.weight}lb <span class="text-white/20">×</span> ${ex.sets}x${ex.reps}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMetrics() {
+            const filtered = state.workouts.filter(w => {
+                const d = new Date(w.date);
+                return d.getMonth() === state.viewMonth && d.getFullYear() === state.viewYear;
+            });
+
+            const cal = document.getElementById('calendar-container');
+            cal.innerHTML = '';
+            const daysInMonth = new Date(state.viewYear, state.viewMonth + 1, 0).getDate();
+            for(let i=1; i<=daysInMonth; i++) {
+                const dayDate = new Date(state.viewYear, state.viewMonth, i).toLocaleDateString();
+                const workout = filtered.find(w => new Date(w.date).toLocaleDateString() === dayDate);
+                cal.innerHTML += `<div class="calendar-day ${workout ? 'cal-'+workout.muscle : ''}"></div>`;
+            }
+
+            const ctx = document.getElementById('volumeChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            
+            const volumeData = MUSCLES.map(m => {
+                return filtered.filter(w => w.muscle === m).reduce((acc, w) => acc + w.totalVolume, 0);
+            });
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: MUSCLES,
+                    datasets: [{
+                        data: volumeData,
+                        backgroundColor: ['#f43f5e', '#0ea5e9', '#84cc16', '#f97316', '#a855f7', '#2dd4bf'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: false }, x: { display: false } }
+                }
+            });
+
+            const freqContainer = document.getElementById('weekly-frequency');
+            freqContainer.innerHTML = MUSCLES.map(m => {
+                const count = filtered.filter(w => w.muscle === m).length;
+                const percent = Math.min(100, (count / 4) * 100);
+                return `
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[8px] font-black uppercase tracking-tighter">
+                            <span>${m}</span>
+                            <span class="text-mint">${count} <span class="text-white/20">sesiones</span></span>
+                        </div>
+                        <div class="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full bg-gradient-to-r from-mint to-sky" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAchievements() {
+            const totalVolume = state.workouts.reduce((acc, w) => acc + w.totalVolume, 0);
+            const totalTime = state.workouts.reduce((acc, w) => acc + w.totalTime, 0);
+            const activeTime = state.workouts.reduce((acc, w) => acc + w.activeTime, 0);
+            const monthlyWorkouts = state.workouts.filter(w => new Date(w.date).getMonth() === new Date().getMonth()).length;
+            const uniqueMuscles = new Set(state.workouts.map(w => w.muscle)).size;
+
+            let unlockedCount = 0;
+            const container = document.getElementById('achievements-container');
+            container.innerHTML = ACHIEVEMENTS.map(ach => {
+                let current = 0;
+                if(ach.type === 'count') current = state.workouts.length;
+                else if(ach.type === 'volume') current = totalVolume;
+                else if(ach.type === 'activeTime') current = activeTime;
+                else if(ach.type === 'monthly') current = monthlyWorkouts;
+                else if(ach.type.startsWith('muscle_')) {
+                    const muscle = ach.type.split('_')[1];
+                    current = state.workouts.filter(w => w.muscle === muscle).length;
+                }
+                else if(ach.type === 'single_volume') current = Math.max(0, ...state.workouts.map(w => w.totalVolume));
+                else if(ach.type === 'single_time') current = Math.max(0, ...state.workouts.map(w => w.totalTime));
+                else if(ach.type === 'single_ex_count') current = Math.max(0, ...state.workouts.map(w => w.exercises.length));
+                else if(ach.type === 'all_muscles') current = uniqueMuscles;
+
+                const isUnlocked = current >= ach.goal;
+                if(isUnlocked) unlockedCount++;
+                const progress = Math.min(100, (current / ach.goal) * 100);
+
+                return `
+                    <div class="achievement-card p-5 rounded-[2.5rem] flex flex-col items-center text-center relative overflow-hidden ${isUnlocked ? 'achievement-unlocked' : 'opacity-40'}">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br ${ach.color} flex items-center justify-center text-3xl shadow-lg mb-4 transform ${isUnlocked ? 'scale-110' : 'grayscale'}">
+                            ${ach.icon}
+                        </div>
+                        <h4 class="text-[10px] font-black uppercase italic leading-tight mb-1">${ach.title}</h4>
+                        <p class="text-[7px] text-white/40 uppercase font-bold mb-4 tracking-tighter">${ach.desc}</p>
+                        
+                        <div class="w-full space-y-1">
+                            <div class="flex justify-between text-[6px] font-black text-white/20 uppercase">
+                                <span>PROGRESO</span>
+                                <span>${Math.round(progress)}%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                                <div class="h-full bg-gradient-to-r ${ach.color}" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        ${isUnlocked ? '<div class="absolute top-2 right-4 text-[8px] text-mint font-black">✔</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('ach-count').innerText = `${unlockedCount}/30 LOGROS`;
+        }
+
+        function refreshUI() {
+            if(state.activeTab === 'metrics') renderMetrics();
+            if(state.activeTab === 'history') renderHistory();
+            if(state.activeTab === 'achievements') renderAchievements();
+            save();
+        }
+
+        window.onload = () => {
+            const sel = document.getElementById('muscle-selector');
+            sel.innerHTML = MUSCLES.map(m => `<button onclick="selectMuscle('${m}')" id="btn-${m}" class="py-4 rounded-2xl bg-white/5 border border-white/5 text-[9px] font-black uppercase text-white/40 tracking-widest transition-all">${m}</button>`).join('');
+            
+            const yearSel = document.getElementById('year-select');
+            for(let y=2024; y<=2030; y++) {
+                const opt = document.createElement('option');
+                opt.value = y; opt.text = y;
+                if(y === state.viewYear) opt.selected = true;
+                yearSel.add(opt);
+            }
+
+            document.getElementById('month-select').value = state.viewMonth;
+            save();
+            refreshUI();
+        };
     </script>
 </body>
 </html>
