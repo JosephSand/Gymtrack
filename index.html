@@ -248,7 +248,7 @@
 
         let state = {
             workouts: JSON.parse(localStorage.getItem('gym_pro_data_v2')) || [],
-            routines: JSON.parse(localStorage.getItem('gym_pro_routines_v2')) || {}, // Memoria de ejercicios por músculo
+            routines: JSON.parse(localStorage.getItem('gym_pro_routines_v2')) || {}, 
             current: { muscle: null, exercises: [], sessionSeconds: 0, productiveSeconds: 0, isStarted: false },
             xp: parseInt(localStorage.getItem('gym_pro_xp_v2')) || 0,
             viewMonth: new Date().getMonth(),
@@ -302,15 +302,26 @@
 
             if(saved.length > 0) {
                 section.classList.remove('hidden');
-                container.innerHTML = saved.map(ex => `
-                    <button onclick="loadRoutineExercise('${ex.name}', ${ex.sets}, ${ex.reps})" 
-                        class="flex-shrink-0 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-left min-w-[120px] active:scale-95 transition-transform">
-                        <div class="text-[9px] font-black uppercase text-mint truncate w-full mb-1">${ex.name}</div>
-                        <div class="text-[7px] font-bold text-white/30 uppercase tracking-widest">${ex.sets} Series · ${ex.reps} Reps</div>
-                    </button>
+                container.innerHTML = saved.map((ex, idx) => `
+                    <div class="flex-shrink-0 relative">
+                        <button onclick="loadRoutineExercise('${ex.name}', ${ex.sets}, ${ex.reps})" 
+                            class="px-4 py-3 rounded-2xl bg-white/5 border border-white/10 text-left min-w-[130px] active:scale-95 transition-transform">
+                            <div class="text-[9px] font-black uppercase text-mint truncate w-[85%] mb-1">${ex.name}</div>
+                            <div class="text-[7px] font-bold text-white/30 uppercase tracking-widest">${ex.sets} Series · ${ex.reps} Reps</div>
+                        </button>
+                        <button onclick="deleteSavedRoutine(${idx})" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-ruby/20 text-ruby text-[8px] font-black rounded-full border border-ruby/20 hover:bg-ruby hover:text-white transition-colors">✕</button>
+                    </div>
                 `).join('');
             } else {
                 section.classList.add('hidden');
+            }
+        }
+
+        function deleteSavedRoutine(idx) {
+            if(state.routines[state.current.muscle]) {
+                state.routines[state.current.muscle].splice(idx, 1);
+                save();
+                renderSavedRoutines();
             }
         }
 
@@ -318,7 +329,7 @@
             document.getElementById('ex-name').value = name;
             document.getElementById('ex-sets').value = sets;
             document.getElementById('ex-reps').value = reps;
-            document.getElementById('ex-weight').value = ""; // El único dato manual
+            document.getElementById('ex-weight').value = ""; 
             openModal();
         }
 
@@ -331,7 +342,6 @@
             const sets = Math.min(10, Math.max(1, parseInt(document.getElementById('ex-sets').value)));
             const reps = Math.min(30, Math.max(1, parseInt(document.getElementById('ex-reps').value)));
             
-            // Guardar en rutinas si no existe o ha cambiado
             if(!state.routines[state.current.muscle]) state.routines[state.current.muscle] = [];
             const existingIdx = state.routines[state.current.muscle].findIndex(e => e.name.toLowerCase() === name.toLowerCase());
             
